@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="15.999992mm"
+   height="15.999993mm"
+   viewBox="0 0 15.999992 15.999993"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   sodipodi:docname="船艦美術草稿.svg"
+   xml:space="preserve"
+   inkscape:export-filename="NavalChess\wwwroot\images\UI\arrow.svg"
+   inkscape:export-xdpi="100"
+   inkscape:export-ydpi="100"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+   id="namedview1"
+   pagecolor="#ffffff"
+   bordercolor="#000000"
+   borderopacity="0.25"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:document-units="mm"
+   inkscape:lockguides="false"
+   showgrid="true"
+   inkscape:zoom="1.4142136"
+   inkscape:cx="304.05591"
+   inkscape:cy="957.77611"
+   inkscape:window-width="1920"
+   inkscape:window-height="1009"
+   inkscape:window-x="-8"
+   inkscape:window-y="-8"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="svg1"
+   inkscape:export-bgcolor="#ffffff00"
+   showguides="true"><inkscape:grid
+     id="grid4"
+     units="mm"
+     originx="-128"
+     originy="-255.99995"
+     spacingx="2.0000001"
+     spacingy="1.9999996"
+     empcolor="#0099e5"
+     empopacity="0.30196078"
+     color="#0099e5"
+     opacity="0.14901961"
+     empspacing="8"
+     enabled="true"
+     visible="true"
+     snapvisiblegridlinesonly="true"
+     dotted="false" /><inkscape:page
+     x="0"
+     y="0"
+     width="15.999992"
+     height="15.999993"
+     id="page2"
+     margin="0"
+     bleed="0" /></sodipodi:namedview><defs
+   id="defs1" />
+
+<rect
+   style="fill:#fffc00;fill-opacity:0.4;stroke:#f4e000;stroke-width:0.202081;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+   id="rect1-8-8-1"
+   width="15.797918"
+   height="15.797915"
+   x="0.10104074"
+   y="0.10102236"
+   inkscape:export-filename="NavalChess\wwwroot\images\UI\radar.svg"
+   inkscape:export-xdpi="100"
+   inkscape:export-ydpi="100" />
+  
+<g
+   id="layer1-1-1"
+   inkscape:label="wifi-icon.svg"
+   transform="matrix(0,-0.01879182,0.01879182,0,-1.9344929,14.82078)"
+   style="fill:#ccb600;fill-opacity:0.886275">
+    <path
+   id="path4391"
+   d="m 362.47,399.37 c -80.452,0.30312 -160.77,30.425 -222.31,90.281 l 55.906,55.281 c 92.256,-89.611 240.75,-90.142 333.66,-1.1562 l 55.781,-55.813 c -62.02,-59.38 -142.59,-88.89 -223.04,-88.59 z m -166.41,145.56 -0.125,0.0937 z"
+   sodipodi:nodetypes="cccccccccc"
+   style="color:#000000;fill:#ccb600;fill-opacity:0.886275"
+   inkscape:connector-curvature="0" />
+    <path
+   id="path4395"
+   d="m 362.37,281.37 c -110.95,0.41801 -221.72,41.957 -306.59,124.5 l 55.469,54.844 c 138.94,-134.56 362.26,-135.24 502.03,-1.375 l 56.656,-55.781 c -85.52,-81.9 -196.62,-122.6 -307.57,-122.19 z m -251.12,179.34 -0.5625,0.53125 z"
+   sodipodi:nodetypes="sccccsccc"
+   style="color:#000000;fill:#ccb600;fill-opacity:0.886275"
+   inkscape:connector-curvature="0" />
+    <path
+   id="path4381"
+   d="m 362.34,516.87 c -50.088,0.18872 -100.12,18.953 -138.44,56.219 l 53.438,52.812 c 47.181,-45.821 123.11,-46.068 170.62,-0.5625 l 53.219,-53.312 c -38.607,-36.975 -88.756,-55.345 -138.84,-55.156 z m -85,109.03 -0.063,0.0625 z"
+   sodipodi:nodetypes="cccccccccc"
+   style="color:#000000;fill:#ccb600;fill-opacity:0.886275"
+   inkscape:connector-curvature="0" />
+    <path
+   id="path4411"
+   sodipodi:rx="78.5"
+   sodipodi:ry="78.5"
+   style="color:#000000;fill:#ccb600;fill-opacity:0.886275"
+   sodipodi:type="arc"
+   d="m 780.99212,634.37006 a 78.5,78.5 0 0 1 -0.0574,-110.95833 78.5,78.5 0 0 1 110.95822,-0.17211 78.5,78.5 0 0 1 0.28684,110.95798 78.5,78.5 0 0 1 -110.95762,0.40159 L 836.5,578.86218 Z"
+   sodipodi:cy="578.86218"
+   sodipodi:cx="836.5"
+   sodipodi:end="2.3520582"
+   sodipodi:start="2.3561945"
+   sodipodi:arc-type="slice"
+   transform="translate(-473.55,131.71)" />
+  </g>
+  </svg>

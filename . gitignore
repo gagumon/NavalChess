@@ -1,0 +1,12 @@
+﻿# 忽略 Visual Studio 快取
+.vs/
+*.suo
+*.user
+
+# 忽略編譯與發布產物
+bin/
+obj/
+*.pdb
+
+# 忽略部署資料夾
+gh-pages/

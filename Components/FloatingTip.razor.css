@@ -1,0 +1,14 @@
+﻿.floating-tip {
+    position: fixed;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.4s ease-in-out;
+}
+    .floating-tip.hidden {
+        opacity: 0;
+    }

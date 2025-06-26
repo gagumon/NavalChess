@@ -1,0 +1,1 @@
+D:\GameDesign\NavalBattleGame_Web\NavalChess\bin\Release\net8.0\publish\web.config

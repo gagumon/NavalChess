@@ -1,0 +1,1328 @@
+﻿@page "/game"
+@using NavalChess.Components
+@using NavalChess.Models
+<div style="position: relative;width: 100%"
+	 @onmousemove="OnPointerMove"
+	 @ontouchstart="OnPointerTouch">
+	<FloatingTip @ref="floatingTipRef" X="@tipX" Y="@tipY" />
+	@if (isTransitioning)
+	{
+		<div class="transition-screen">
+			<p>@(screenText)</p>
+		</div>
+	}
+	else
+	{
+		@switch (currentState)
+		{
+			case GameState.Menu:
+				<div>
+					<button class="btn btn-primary" @onclick="() => NextState(GameState.Setup)">單機模式</button>
+					<button class="btn btn-secondary" disabled>線上對戰（未開放）</button>
+				</div>
+				break;
+
+			case GameState.Setup:
+				<div>
+					<h5>初始設定</h5>
+					<p>點擊格子可以改變地形(海洋/島嶼)，按+-鈕調整佈署尺寸</p>
+					<div>
+						<label>列數 (Rows): </label>
+						<button class="btn btn-sm btn-outline-secondary" @onclick="DecrementRows">-</button>
+						<span class="mx-2">@SetupConfig.Rows</span>
+						<button class="btn btn-sm btn-outline-secondary" @onclick="IncrementRows">+</button>
+					</div>
+					<div>
+						<label>行數 (Columns): </label>
+						<button class="btn btn-sm btn-outline-secondary" @onclick="DecrementCols">-</button>
+						<span class="mx-2">@SetupConfig.Columns</span>
+						<button class="btn btn-sm btn-outline-secondary" @onclick="IncrementCols">+</button>
+					</div>
+					<div class="full-board" style="--rows:@SetupConfig.Rows; --cols:@SetupConfig.Columns; --cell-size:@($"{BoardConfig.CellSize}px")">
+						@for (int row = 0; row < SetupConfig.Rows; row++)
+						{
+							for (int col = 0; col < SetupConfig.Columns; col++)
+							{
+								var pos = new CellPosition(row, col);
+								var terrain = cellStates[pos].Terrain;
+								var color = terrain == TerrainType.Island ? "lightgreen" : "lightsteelblue";
+								<div class="cell"
+									 style="background-color:@color"
+									 @onclick="() => ToggleTerrain(pos)">
+								</div>
+							}
+						}
+					</div>
+					<div>
+						<label>總預算上限: </label>
+						<button class="btn btn-sm btn-outline-secondary" @onclick="DecrementBudget">-</button>
+						<span class="mx-2">@SetupConfig.InitialBudget</span>
+						<button class="btn btn-sm btn-outline-secondary" @onclick="IncrementBudget">+</button>
+						<span class="mx-4" style="opacity:0.5">@($"後手多{(int)Math.Round(subsidy * 100)}%的補償")</span>
+					</div>
+					<button class="btn btn-success mt-2" @onclick="() => NextState(GameState.PlayerDeploy)">開始佈署</button>
+				</div>
+				break;
+
+			case GameState.PlayerDeploy:
+				<h5>@(ThisRoundPlayer?.Name)佈署艦隊</h5>
+				<div class="deploy-container">
+					<div class="deploy-column">
+						<!-- 旋轉按鈕與預算 -->
+						<div class="subordinate-info">
+							<button class="u-btn" style="background-color: dodgerblue;"
+									@onclick="() => { if (SelctShipPvi != null) SelctShipPvi.Rotate(); }">
+								旋轉單位
+							</button>
+							<div class="budget">
+								<span>剩餘預算</span>
+								<span>💰@ThisRoundPlayer?.Budget</span>
+							</div>
+						</div>
+						<!-- 棋盤 -->
+						<div class="full-board" style="--rows:@GameConfig.Rows; --cols:@GameConfig.Columns; --cell-size:@($"{BoardConfig.CellSize}px")">
+							@for (int row = 0; row < GameConfig.Rows; row++)
+							{
+								for (int col = 0; col < GameConfig.Columns; col++)
+								{
+									var pos = new CellPosition(row, col);
+									var cell = cellStates[pos];
+									@if (SelctShipPvi != null)
+									{
+										string bg = GetBgColor(pos, SelctShipPvi);
+										<div class="cell"
+											 style="background-color:@bg"
+											 @onmouseover="() => SelctShipPvi.CenterPoint = pos"
+											 @ontouchmove="() =>SelctShipPvi.CenterPoint=pos"
+											 @onclick="() => TryDeployAt(pos)">
+										</div>
+										if (SelctShipPvi.OccupyGrid != null && !IsCross(SelctShipPvi.OccupyGrid.ToArray()))
+										{
+											var previewStyle = SelctShipPvi.GetStylePos(currentState);
+											<div class="ship" style="@previewStyle"></div>
+										}
+									}
+									else
+									{
+										string bg = GetBgColor(pos);
+										<div class="cell"
+											 style="background-color:@bg"
+											 @onclick="() => TryDeployAt(pos)">
+										</div>
+									}
+								}
+							}
+							@foreach (var deployed in ThisRoundPlayer?.Ships ?? Enumerable.Empty<Ship>())
+							{
+								var tempStyle = deployed.GetStylePos(currentState);
+								<div class="ship" style="@tempStyle"></div>
+							}
+						</div>
+						<!-- 完成布署按鈕 -->
+						<button class="u-btn" style="background-color: forestgreen;" @onclick="() => CompleteDeployment()">完成部屬</button>
+					</div>
+					<!-- 選購清單 -->
+					<div class="unit-panel">
+						<h5>選購單位</h5>
+						@foreach (var unit in AvailableUnits)
+						{
+							<div @attributes="GetPanelStyle(unit)">
+								<div class="unit-img">
+									<img src="@unit.UImagePath" style="; --img-size:@($"{60}px")" alt="@unit.Name" />
+								</div>
+								<div class="unit-info">
+									<div class="unit-header">
+										<span class="unit-name">@unit.Name</span>
+										<span class="unit-size">@unit.SizeText</span>
+										<span class="unit-price @(ThisRoundPlayer?.Budget < unit.Price ? " insufficient" : "")">
+											💰 @unit.Price
+										</span>
+									</div>
+									<div class="unit-desc">@unit.Description</div>
+								</div>
+							</div>
+						}
+						<div class="mt-2">
+							<button class="u-btn" style="background-color: Gray ;" @onclick="CancelSelection">取消選擇</button>
+						</div>
+					</div>
+				</div>
+				break;
+			case GameState.CombatPhase:
+				<div class="deploy-row">
+					<div class="unit-list">
+						@if (Player1 != null)
+						{
+							<h5>@(Player1.Name)部隊</h5>
+							@foreach (var unit in AvailableUnits)
+							{
+								int quantity = Player1.Ships.Count(s => s.Id == unit.Id && s.IsSurvive(cellStates));
+								if (unit.IsShip && quantity > 0 && ThisRoundPlayer == Player1)
+								{
+									<div @attributes="GetPanelStyle(unit)">
+										<div class="unit-img">
+											<img src="@unit.UImagePath" style="; --img-size:@($"{60}px")" alt="@unit.Name" />
+										</div>
+										<span class="quantity">×  @(quantity)</span>
+									</div>
+								}
+								else
+								{
+									<div class="unit-prepare-frameless">
+										<div class="unit-img">
+											<img src="@unit.UImagePath" style="; --img-size:@($"{60}px")" alt="@unit.Name" />
+										</div>
+										<span class="quantity">× @(quantity)</span>
+									</div>
+								}
+							}
+						}
+					</div>
+					<div class="deploy-column-center">
+						<img src="images\UI\arrow.svg" alt="回合箭頭" style="transform: @($"scaleX({1-(RoundIndex % Players.Count) * 2})"); width:25px; height:25px; object-fit:contain;">
+						<div class="combat-board-wrapper">
+							@{
+								var cntLineTop = 17;
+								var cntLineLeft = (SetupConfig.Columns + 1) * BoardConfig.CellSize;
+								var cntLineHeight = (SetupConfig.Rows) * BoardConfig.CellSize;
+							}
+							<div class="center-divider" style="--cntLine-top:@($"{cntLineTop}px");--cntLine-left:@($"{cntLineLeft}px");--cntLine-height:@($"{cntLineHeight}px")">
+							</div>
+							<div class="full-board" style="--rows:@GameConfig.Rows + 1; --cols:@GameConfig.Columns + 2; --cell-size:@($"{BoardConfig.CellSize}px")">
+								@for (int row = 0; row <= GameConfig.Rows; row++)
+								{
+									for (int col = -1; col <= GameConfig.Columns; col++)
+									{
+										if ((row == GameConfig.Rows && col == -1) || (row == GameConfig.Rows && col == GameConfig.Columns))
+										{
+											<div class="corner-label"></div>
+										}
+										else if (row == GameConfig.Rows || col == -1 || col == GameConfig.Columns)
+										{
+											string? dectNum = cellStates.TryGetValue(new CellPosition(row, col), out var cell) && cell.IsDetect
+											? cell.DectNum.ToString() : null;
+											<div class="col-label">
+												@(dectNum)
+											</div>
+										}
+										else
+										{
+											var pos = new CellPosition(row, col);
+											cellStates.TryGetValue(new CellPosition(row, col), out var cell);
+											<div @attributes="GetCellAttributes(pos)">
+												@if (IsAnimationPlaying && BombTargets.Contains(pos))
+												{
+													<div class="bombing-animation" style="background-image: url('images/effects/bomb.svg')"></div>
+												}
+												@if (cell != null && cell.IsDetect)
+												{
+													<span class="dectnum">@cell.DectNum</span>
+												}
+												@if (cell != null && cell.IsCheck && cell.IsOccupied)
+												{
+													<div class="fire-flame"></div>
+												}
+											</div>
+										}
+									}
+								}
+								@foreach (var player in Players)
+								{
+									foreach (var exposed in player?.Ships ?? [])
+									{
+										if (!exposed.IsSurvive(cellStates))
+										{
+											var tempStyle = exposed.GetStylePos(currentState);
+											<div class="ship" style="@tempStyle"></div>
+										}
+									}
+								}
+								@if (operCursor != null && operCursor.Path != null)
+								{
+									string? cursorStyle;
+									if (!IsDrag) { cursorStyle = operCursor.GetStylePos(TargetPos, CursorAngle); }
+									else { cursorStyle = operCursor.GetStylePos(StartDragPos, CursorAngle); }
+
+									if (!IsCross(operCursor.GetRangeGrid(TargetPos, CursorAngle).ToArray()) && !IsAnimationPlaying)
+									{
+										<div class="cursor" style=@(cursorStyle)></div>
+									}
+								}
+								@if (isTorpedoing)
+								{
+									<div class="torpedo" style="@GetTorpedoStyle()">
+									</div>
+								}
+								@if (isRadioing)
+								{
+									@for (int row = 0; row <= GameConfig.Rows; row++)
+									{
+										for (int col = -1; col <= GameConfig.Columns; col++)
+										{
+											var pos = new CellPosition(row, col);
+											<div class="effect-layer" style="@GetRadioWaveStyle(pos)">
+											</div>
+										}
+									}
+								}
+							</div>
+						</div>
+					</div>
+					<div class="unit-list">
+						@if (Player2 != null)
+						{
+							<h5>@(Player2.Name)部隊</h5>
+							@foreach (var unit in AvailableUnits)
+							{
+								int quantity = Player2.Ships.Count(s => s.Id == unit.Id && s.IsSurvive(cellStates));
+								if (unit.IsShip && quantity > 0 && ThisRoundPlayer == Player2)
+								{
+									<div @attributes="GetPanelStyle(unit)">
+										<div class="unit-img">
+											<img src="@unit.UImagePath" style="; --img-size:@($"{60}px")" alt="@unit.Name" />
+										</div>
+										<span class="quantity">× @(quantity)</span>
+									</div>
+								}
+								else
+								{
+									<div class="unit-prepare-frameless">
+										<div class="unit-img">
+											<img src="@unit.UImagePath" style="; --img-size:@($"{60}px")" alt="@unit.Name" />
+										</div>
+										<span class="quantity">× @(quantity)</span>
+									</div>
+								}
+							}
+						}
+					</div>
+				</div>
+				break;
+			case GameState.Finish:
+				<div class="full-board" style="--rows:@GameConfig.Rows + 1; --cols:@GameConfig.Columns + 2; --cell-size:@($"{BoardConfig.CellSize}px")">
+					@for (int row = 0; row <= GameConfig.Rows; row++)
+					{
+						for (int col = -1; col <= GameConfig.Columns; col++)
+						{
+							if ((row == GameConfig.Rows && col == -1) || (row == GameConfig.Rows && col == GameConfig.Columns))
+							{
+								<div class="corner-label"></div>
+							}
+							else if (row == GameConfig.Rows || col == -1 || col == GameConfig.Columns)
+							{
+								string? dectNum = cellStates.TryGetValue(new CellPosition(row, col), out var cell) && cell.IsDetect
+								? cell.DectNum.ToString() : null;
+								<div class="col-label">
+									@(dectNum)
+								</div>
+							}
+							else
+							{
+								var pos = new CellPosition(row, col);
+								cellStates.TryGetValue(new CellPosition(row, col), out var cell);
+								<div @attributes="GetCellAttributes(pos)">
+									@if (IsAnimationPlaying && BombTargets.Contains(pos))
+									{
+										<div class="bombing-animation" style="background-image: url('images/effects/bomb.svg')"></div>
+									}
+									@if (cell != null && cell.IsDetect)
+									{
+										<span class="dectnum">@cell.DectNum</span>
+									}
+									@if (cell != null && cell.IsCheck && cell.IsOccupied)
+									{
+										<div class="fire-flame"></div>
+									}
+								</div>
+							}
+						}
+					}
+					@foreach (var player in Players)
+					{
+						foreach (var exposed in player?.Ships ?? [])
+						{
+							if (!exposed.IsSurvive(cellStates) || isGameOver)
+							{
+								var tempStyle = exposed.GetStylePos(currentState);
+								<div class="ship" style="@tempStyle"></div>
+							}
+						}
+					}
+					@if (operCursor != null && operCursor.Path != null)
+					{
+						string? cursorStyle;
+						if (!IsDrag) { cursorStyle = operCursor.GetStylePos(TargetPos, CursorAngle); }
+						else { cursorStyle = operCursor.GetStylePos(StartDragPos, CursorAngle); }
+
+						if (!IsCross(operCursor.GetRangeGrid(TargetPos, CursorAngle).ToArray()) && !IsAnimationPlaying)
+						{
+							<div class="cursor" style=@(cursorStyle)></div>
+						}
+					}
+					@if (isTorpedoing)
+					{
+						<div class="torpedo" style="@GetTorpedoStyle()">
+						</div>
+					}
+					@if (isRadioing)
+					{
+						@for (int row = 0; row <= GameConfig.Rows; row++)
+						{
+							for (int col = -1; col <= GameConfig.Columns; col++)
+							{
+								var pos = new CellPosition(row, col);
+								<div class="effect-layer" style="@GetRadioWaveStyle(pos)">
+								</div>
+							}
+						}
+					}
+				</div>
+
+				break;
+
+		}
+	}
+</div>
+
+@code {
+	private FloatingTip? floatingTipRef;
+	private Dictionary<string, object> GetPanelStyle(UnitTypeInfo unit)
+	{
+		var attrs = new Dictionary<string, object>();
+		string st = "background-color:#f6ff55";
+		switch (currentState)
+		{
+			case GameState.PlayerDeploy:
+				attrs["class"] = "unit-entry";
+				if (SelctShipPvi != null && unit.Id == SelctShipPvi.Id)
+				{
+					attrs["style"] = st;
+				}
+				attrs["onclick"] = EventCallback.Factory.Create(this, () => SelectUnit(unit));
+				break;
+			case GameState.CombatPhase:
+				attrs["class"] = "unit-prepare";
+				if (operCursor != null && unit.Id == operCursor.Id)
+				{
+					attrs["style"] = st;
+				}
+				attrs["onclick"] = EventCallback.Factory.Create(this, () => SelectUnitToFire(unit));
+				break;
+		}
+		return attrs;
+	}
+	private Dictionary<string, object> GetCellAttributes(CellPosition pos)
+	{
+		var attrs = new Dictionary<string, object>();
+		attrs["class"] = "cell";
+		attrs["style"] = GetCellStyle(pos);
+
+		if (!IsCellDeployable(pos) && !IsAnimationPlaying && !isGameOver)
+		{
+			if (operCursor != null)
+			{
+				if (operCursor.Id == UnitType.destroyer)
+				{
+					attrs["onmousedown"] = EventCallback.Factory.Create(this, () => FireVectorStart(pos));
+					attrs["ontouchstart"] = EventCallback.Factory.Create(this, () => FireVectorStart(pos));
+					attrs["onmousemove"] = EventCallback.Factory.Create(this, () => TargetPos = pos);
+					attrs["ontouchmove"] = EventCallback.Factory.Create(this, () => TargetPos = pos);
+					attrs["onmouseup"] = EventCallback.Factory.Create(this, () => FireVectorEnd(pos));
+					attrs["ontouchend"] = EventCallback.Factory.Create(this, () => FireVectorEnd(pos));
+				}
+				else if (operCursor.Id == UnitType.submarine)
+				{
+					if ((cellStates[pos].Terrain == TerrainType.Sea))
+					{
+						attrs["onmousedown"] = EventCallback.Factory.Create(this, () => FireVectorStart(pos));
+						attrs["ontouchstart"] = EventCallback.Factory.Create(this, () => FireVectorStart(pos));
+						attrs["onmousemove"] = EventCallback.Factory.Create(this, () => TargetPos = pos);
+						attrs["ontouchmove"] = EventCallback.Factory.Create(this, () => TargetPos = pos);
+						attrs["onmouseup"] = EventCallback.Factory.Create(this, () => FireVectorEnd(pos));
+						attrs["ontouchend"] = EventCallback.Factory.Create(this, () => FireVectorEnd(pos));
+					}
+				}
+				else
+				{
+					attrs["onclick"] = EventCallback.Factory.Create(this, () => FireTarget(pos));
+					attrs["onmouseover"] = EventCallback.Factory.Create(this, () => TargetPos = pos);
+					attrs["ontouchmove"] = EventCallback.Factory.Create(this, () => TargetPos = pos);
+				}
+			}
+			else
+			{
+				attrs["onclick"] = EventCallback.Factory.Create(this, () => FireTarget(pos));
+			}
+		}
+		return attrs;
+	}
+	private string GetCellStyle(CellPosition pos)
+	{
+		var cell = cellStates[pos];
+		string st = "background-color:";
+
+		if (cell.IsCheck)
+		{
+			st += (cell.Terrain == TerrainType.Island) ? "#73e68c" : "#9eb0c7";
+		}
+		else
+		{
+			st += (cell.Terrain == TerrainType.Island) ? "lightgreen" : "lightsteelblue";
+		}
+
+		if (IsCellDeployable(pos) || isGameOver)
+		{
+			st += ";cursor:default";
+		}
+		else if ((operCursor is Cursor crr) && (crr.Id == UnitType.submarine) && (cellStates[pos].Terrain != TerrainType.Sea))
+		{
+			st += ";cursor:default";
+		}
+		return st;
+	}
+	async Task NextState(GameState nextState)
+	{
+		if (nextState == GameState.Setup)
+		{
+			screenText = "進入初始設置";
+		}
+		else if (nextState == GameState.PlayerDeploy)
+		{
+			GameConfig = new BoardConfig(SetupConfig.Rows, SetupConfig.Columns * 2, BoardConfig.CellSize, SetupConfig.InitialBudget);
+			cellStates = BoardBuilder.BuildMirroredBoard(SetupConfig, cellStates);
+			Player1 = Player.Create("玩家一", GameConfig.InitialBudget);
+			Player2 = Player.Create("玩家二", (int)Math.Round(GameConfig.InitialBudget * (1 + subsidy)));
+			Players.Add(Player1); Players.Add(Player2);
+			screenText = "開始佈署船艦";
+			await NextTurn();
+		}
+		else if (nextState == GameState.CombatPhase)
+		{
+			screenText = "遊戲準備開始";
+		}
+
+		isTransitioning = true;
+		StateHasChanged();
+		await Task.Delay(1000);
+
+		currentState = nextState;
+		isTransitioning = false;
+		StateHasChanged();
+	}
+	async Task FireTarget(CellPosition pos)
+	{
+		if (operCursor != null && !IsCross(operCursor.GetRangeGrid(TargetPos, CursorAngle).ToArray()))
+		{
+			switch (operCursor.Id)
+			{
+				case UnitType.carrier:
+					{
+						var ranged = operCursor.GetRangeGrid(pos, CursorAngle);
+						Random rand = new();
+						var list = ranged.ToList();
+
+						if (list.Count < 3)
+							throw new InvalidOperationException("集合格數小於抽樣數");
+
+						HashSet<int> index = new();
+						int randNum;
+						for (int i = 0; i < 3; i++)
+						{
+							do { randNum = rand.Next(list.Count); }
+							while (index.Contains(randNum));
+							index.Add(randNum);
+						}
+						BombTargets = new List<CellPosition> { };
+						foreach (var item in index)
+						{
+							BombTargets.Add(list[item]);
+						}
+
+						IsAnimationPlaying = true;
+						StateHasChanged();
+
+						await Task.Delay(1000);
+
+						cellStates[pos].IsDetect = true;
+						hitProgram(BombTargets.ToArray());
+						IsAnimationPlaying = false;
+						BombTargets.Clear();
+						break;
+					}
+				case UnitType.battleship:
+					{
+						var ranged = operCursor.GetRangeGrid(pos, CursorAngle);
+						Random rand = new();
+						var list = ranged.ToList();
+
+						if (list.Count < 3)
+							throw new InvalidOperationException("集合格數小於抽樣數");
+
+						int index = rand.Next(list.Count);
+						list.Remove(list[index]);
+
+						BombTargets = list;
+						IsAnimationPlaying = true;
+						StateHasChanged();
+
+						await Task.Delay(1000);
+						hitProgram(list.ToArray());
+						IsAnimationPlaying = false;
+						BombTargets.Clear();
+						break;
+					}
+				case UnitType.cruiser:
+					{
+						bool hit = cellStates.TryGetValue(pos, out var cell) &&
+											!cell.IsCheck &&
+											cell.OccupiedBy is Ship ship &&
+											ship.IsShip;
+						if (burst.Count > 0)
+						{
+							var (hitPoint, num) = burst[0];
+							bool isAdjacent = Math.Abs(hitPoint.Row - pos.Row) + Math.Abs(hitPoint.Col - pos.Col) == 1;
+							if (!isAdjacent)
+							{
+								if (floatingTipRef != null) { await floatingTipRef.ShowTipAsync("只能連射相鄰位置"); }
+								return;
+							}
+							if (hit)
+							{
+								if (num > 1)
+									burst[0] = (pos, num - 1);
+								else
+									burst.Clear();
+							}
+							else
+							{
+								burst.Clear();
+							}
+						}
+						else
+						{
+							if (hit) { burst.Add((pos, 2)); }
+						}
+
+						List<CellPosition> list = new() { pos };
+						BombTargets = list;
+						IsAnimationPlaying = true;
+						StateHasChanged();
+						await Task.Delay(1000);
+						hitProgram(pos);
+						IsAnimationPlaying = false;
+						BombTargets.Clear();
+						if (burst.Count > 0) return;
+						break;
+					}
+			}
+			operCursor = null;
+			await NextTurn();
+		}
+		else
+		{
+			string st = (RoundIndex % Players.Count == 0) ? "左" : "右";
+			if (floatingTipRef != null) { await floatingTipRef.ShowTipAsync($"請先從{st}側選擇船艦"); }
+		}
+	}
+	void FireVectorStart(CellPosition pos)
+	{
+		if (operCursor != null && !IsCross(operCursor.GetRangeGrid(TargetPos, CursorAngle).ToArray()))
+		{
+			var cell = cellStates[pos];
+			IsDrag = true;
+			StartDragPos = pos;
+		}
+	}
+	async Task FireVectorEnd(CellPosition pos)
+	{
+		if (operCursor != null && !IsCross(operCursor.GetRangeGrid(TargetPos, CursorAngle).ToArray()))
+		{
+			switch (operCursor.Id)
+			{
+				case UnitType.destroyer:
+					{
+						List<CellPosition> list = new() { StartDragPos };
+						BombTargets = list;
+						IsAnimationPlaying = true;
+						isRadioing = true;
+						RadioWavesPos.Add((StartDragPos, CursorAngle));
+						StateHasChanged();
+						await Task.Delay(1000);
+						hitProgram(StartDragPos);
+						if (CursorAngle % 180 == 0)
+						{
+							int c = (ThisRoundPlayer == Player1) ? GameConfig.Columns : -1;
+							var labelPos = new CellPosition(StartDragPos.Row, c);
+							cellStates[labelPos].IsDetect = true;
+						}
+						else
+						{
+							int r = GameConfig.Rows;
+							var labelPos = new CellPosition(r, StartDragPos.Col);
+							cellStates[labelPos].IsDetect = true;
+						}
+						IsAnimationPlaying = false;
+						isRadioing = false;
+						RadioWavesPos.Clear();
+						BombTargets.Clear();
+						break;
+					}
+				case UnitType.submarine:
+					{
+						var cell = cellStates[StartDragPos];
+						if (cell.Terrain != TerrainType.Sea)
+						{
+							if (floatingTipRef != null) { await floatingTipRef.ShowTipAsync("魚雷只能從海面上發射"); }
+							return;
+						}
+						IsAnimationPlaying = true;
+						isTorpedoing = true;
+						torpedoTimes = 0;
+						for (int s = 0; s < 3; s++)
+						{
+							var dynamic = new CellPosition(
+								StartDragPos.Row + torpedoDir.dRow * s,
+								StartDragPos.Col + torpedoDir.dCol * s);
+
+							if (!cellStates.TryGetValue(dynamic, out var cellNow) ||
+								cellNow.Terrain != TerrainType.Sea ||
+								IsCross(dynamic))
+							{
+								break;
+							}
+							for (int a = 0; a < 5; a++)
+							{
+								torpedoTimes += (BoardConfig.CellSize) / 5;
+								StateHasChanged();
+								await Task.Delay(60);
+							}
+
+							hitProgram(dynamic);
+							if (cellNow.IsOccupied) break;
+						}
+						IsAnimationPlaying = false;
+						isTorpedoing = false;
+						break;
+					}
+			}
+			IsDrag = false;
+			operCursor = null;
+			await NextTurn();
+		}
+	}
+	string GetTorpedoStyle()
+	{
+		int cellSize = BoardConfig.CellSize;
+		int offsetX = torpedoDir.dCol * torpedoTimes;
+		int offsetY = torpedoDir.dRow * torpedoTimes;
+
+		int originTop = StartDragPos.Row;
+		int originLeft = StartDragPos.Col;
+		originLeft = ((originLeft * cellSize) + (cellSize * 3 / 2));
+		originTop = (originTop * cellSize) + (cellSize / 2);
+
+		return $"top:{originTop + offsetY}px; left:{originLeft + offsetX}px;" +
+						$"width:{BoardConfig.CellSize}px; height:{BoardConfig.CellSize}px;" +
+						$"position:absolute; transform: rotate({CursorAngle}deg);" +
+						$"background-image: url('images/effects/torpedo.svg');" +
+						$"background-repeat: no-repeat; z-index:20;";
+	}
+	string GetRadioWaveStyle(CellPosition pos)
+	{
+		int index = RadioWavesPos.FindIndex(p => p.Item1 == pos);
+		if (index >= 0 && index < RadioWavesPos.Count)
+		{
+			int angle = RadioWavesPos[index].Item2;
+			int cellSize = BoardConfig.CellSize;
+			if (angle % 180 == 0)
+			{
+				int top = pos.Row * cellSize;
+				int left = (ThisRoundPlayer == Player1) ? SetupConfig.Columns + 1 : 1;
+				left = left * cellSize;
+				return $"position:absolute; top:{top}px; left:{left}px; width:{cellSize * SetupConfig.Columns}px; height:{cellSize}px; transform: rotate(0deg);background-image: url('images/effects/RadioWaves.svg');";
+			}
+			else
+			{
+				int top = (SetupConfig.Rows - 1) * cellSize / 2;
+				int left = (pos.Col + 1) * cellSize - ((SetupConfig.Rows - 1) * cellSize / 2);
+				return $"position:absolute; top:{top}px; left:{left}px; width:{cellSize * SetupConfig.Rows}px; height:{cellSize}px; transform: rotate(90deg);background-image: url('images/effects/RadioWaves.svg');";
+			}
+		}
+		else
+		{
+			return "";
+		}
+	}
+	async Task SelectUnitToFire(UnitTypeInfo unit)
+	{
+		if (IsAnimationPlaying)
+		{ return; }
+		IsDrag = false;
+		if (burst.Count == 0)
+		{ operCursor = Cursor.FromUnitInfo(unit); }
+		else
+		{
+			var (hitPoint, num) = burst[0];
+			if (floatingTipRef != null)
+			{ await floatingTipRef.ShowTipAsync($"巡洋艦還能連射{num}次"); }
+		}
+	}
+	async Task NextTurn()
+	{
+		//回合結束
+		if (ThisRoundPlayer is Player player && currentState == GameState.CombatPhase && RoundIndex > 3)
+		{
+			int turretCount = ThisRoundPlayer.Ships.Count(s => (s.Id == UnitType.turret && s.IsSurvive(cellStates)));
+			if (turretCount > 0)
+			{
+				Random rand = new();
+				List<CellPosition> turretList = new();
+				int startCol = ((RoundIndex + 1) % Players.Count) * SetupConfig.Columns; int endCol = startCol + SetupConfig.Columns - 1;
+				for (int r = 0; r < GameConfig.Rows; r++)
+				{
+					for (int c = startCol; c <= endCol; c++)
+					{
+						var pos = new CellPosition(r, c);
+						cellStates.TryGetValue(pos, out var cell);
+						if (cell != null && cell.IsCheck == false)
+						{
+							turretList.Add((pos));
+						}
+					}
+				}
+				HashSet<int> randArray = new();
+				int randItem; int maxTimes = Math.Min(turretList.Count, turretCount);
+				for (int i = 0; i < maxTimes; i++)
+				{
+					do
+					{
+						randItem = rand.Next(turretList.Count);
+					}
+					while (randArray.Contains(randItem));
+					randArray.Add(randItem);
+				}
+				foreach (int index in randArray)
+				{
+					var posT = turretList[index];
+					BombTargets.Add(posT);
+				}
+				IsAnimationPlaying = true;
+				StateHasChanged();
+				await Task.Delay(1000);
+				IsAnimationPlaying = false;
+				foreach (int index in randArray)
+				{
+					var posT = turretList[index];
+					hitProgram(posT);
+				}
+				BombTargets.Clear();
+			}
+		}
+		//回合變更
+		RoundIndex += 1;
+		ThisRoundPlayer = Players[(RoundIndex % Players.Count)];
+		//回合開始
+		if (currentState == GameState.CombatPhase)
+		{
+			int radarCount = ThisRoundPlayer.Ships.Count(s => (s.Id == UnitType.radar && s.IsSurvive(cellStates)));
+			if (radarCount > 0)
+			{
+				Random rand = new();
+				List<(CellPosition, int)> radarList = new();
+				int startCol = ((RoundIndex + 1) % Players.Count) * SetupConfig.Columns; int endCol = startCol + SetupConfig.Columns - 1;
+				for (int c = startCol; c <= endCol; c++)
+				{
+					var pos = new CellPosition(GameConfig.Rows, c);
+					cellStates.TryGetValue(pos, out var cell);
+					if (cell != null && cell.IsDetect == false)
+					{
+						radarList.Add((pos, 90));
+					}
+				}
+				int cSide = -1 + ((RoundIndex + 1) % Players.Count) * (GameConfig.Columns + 1);
+				for (int r = 0; r <= GameConfig.Rows; r++)
+				{
+					var pos = new CellPosition(r, cSide);
+					cellStates.TryGetValue(pos, out var cell);
+					if (cell != null && cell.IsDetect == false)
+					{
+						radarList.Add((pos, 180));
+					}
+				}
+				HashSet<int> randArray = new();
+				int randItem; int maxTimes = Math.Min(radarList.Count, radarCount);
+				for (int i = 0; i < maxTimes; i++)
+				{
+					do
+					{
+						randItem = rand.Next(radarList.Count);
+					}
+					while (randArray.Contains(randItem));
+					randArray.Add(randItem);
+				}
+				foreach (int index in randArray)
+				{
+					var (posR, angle) = radarList[index];
+					RadioWavesPos.Add((posR, angle));
+				}
+				isRadioing = true; IsAnimationPlaying = true;
+				StateHasChanged();
+				await Task.Delay(1000);
+				isRadioing = false; IsAnimationPlaying = false;
+				foreach (int index in randArray)
+				{
+					var (posR, angle) = radarList[index];
+					var cell = cellStates[posR];
+					cell.IsDetect = true;
+				}
+				RadioWavesPos.Clear();
+			}
+		}
+	}
+	async Task CompleteDeployment()
+	{
+		bool haveShip = (ThisRoundPlayer?.Ships ?? Enumerable.Empty<Ship>())
+		.Any(ship => ship.IsShip == true);
+
+		if (!haveShip)
+		{
+			if (floatingTipRef != null) { await floatingTipRef.ShowTipAsync("至少要佈署一艘船艦"); }
+			return;
+		}
+		CancelSelection();
+		if (RoundIndex == 2)
+		{
+			await NextTurn();
+		}
+		else
+		{
+			await NextState(GameState.CombatPhase);
+			operCursor = null;
+			await NextTurn();
+			CalDectNum();
+		}
+	}
+	private void CalDectNum()
+	{
+		for (int row = 0; row < GameConfig.Rows; row++)
+		{
+			int sumRow1 = 0, sumRow2 = 0;
+			for (int col = 0; col < GameConfig.Columns; col++)
+			{
+				var pos = new CellPosition(row, col);
+				if (cellStates.TryGetValue(pos, out var cell) &&
+					cell.IsOccupied &&
+					cell.OccupiedBy?.IsShip == true)
+				{
+					if (col < SetupConfig.Columns)
+						sumRow1 += 1;
+					else
+						sumRow2 += 1;
+				}
+				if ((col > 0 && col < GameConfig.Columns) && (row > 0 && row < GameConfig.Rows))
+				{
+					HashSet<CellPosition> ranged = new();
+					int posR = pos.Row; int posC = pos.Col;
+					for (int i = -1; i < 2; i++)
+					{
+						for (int j = -1; j < 2; j++)
+						{
+							ranged.Add(new CellPosition((posR + i), (posC + j)));
+						}
+					}
+					int dectNum = 0;
+					foreach (var info in ranged)
+					{
+						cellStates.TryGetValue(info, out var cellinfo);
+						if (cellinfo != null && cellinfo.OccupiedBy is Ship ship && ship.IsShip)
+						{ dectNum += 1; }
+					}
+					cellStates.TryGetValue(pos, out var dataC);
+					if (dataC != null) dataC.DectNum = dectNum;
+				}
+
+			}
+			cellStates.TryGetValue(new CellPosition(row, -1), out var leftLabel);
+			if (leftLabel != null) leftLabel.DectNum = sumRow1;
+
+			cellStates.TryGetValue(new CellPosition(row, GameConfig.Columns), out var rightLabel);
+			if (rightLabel != null) rightLabel.DectNum = sumRow2;
+		}
+
+		for (int col = 0; col < GameConfig.Columns; col++)
+		{
+			int sumCol = 0;
+			for (int row = 0; row < GameConfig.Rows; row++)
+			{
+				var pos = new CellPosition(row, col);
+				if (cellStates.TryGetValue(pos, out var cell) &&
+					cell.IsOccupied &&
+					cell.OccupiedBy?.IsShip == true)
+				{
+					sumCol += 1;
+				}
+			}
+			cellStates.TryGetValue(new CellPosition(GameConfig.Rows, col), out var bottomLabel);
+			if (bottomLabel != null) bottomLabel.DectNum = sumCol;
+		}
+	}
+	string GetBgColor(CellPosition pos, Ship? previewShip = null)
+	{
+		var cell = cellStates[pos];
+		string baseColor = cell.Terrain == TerrainType.Island ? "lightgreen" : "lightsteelblue";
+		if (!IsCellDeployable(pos))
+			return "gray";
+		if (previewShip != null)
+		{
+			var affectedCells = previewShip.OccupyGrid;
+			if (affectedCells != null && affectedCells.Contains(pos))
+			{
+				bool isValid = (cell.Terrain == previewShip.Terrain) && (!cell.IsOccupied);
+				return isValid ? "limegreen" : "orangered";
+			}
+		}
+		return baseColor;
+	}
+	private void hitProgram(params CellPosition[] positions)
+	{
+		if (positions == null || positions.Length == 0)
+		{ return; }
+		foreach (var pos in positions)
+		{
+			cellStates.TryGetValue(pos, out var cell);
+			if (cell != null)
+			{
+				if ((cell.OccupiedBy is Ship ship) && (ship.Id == UnitType.mine) && (ship.IsSurvive(cellStates)))
+				{
+					var mirrorCol = GameConfig.Columns - 1 - pos.Col;
+					var minePos = new CellPosition(pos.Row, mirrorCol);
+					cellStates.TryGetValue(minePos, out var mineCell);
+					if (mineCell != null) { mineCell.IsCheck = true; }
+				}
+				cell.IsCheck = true;
+			}
+		}
+		checkGameResult();
+	}
+	private bool IsCross(params CellPosition[] positions)
+	{
+		if (positions == null || positions.Length == 0)
+			return true;
+
+		foreach (var pos in positions)
+		{
+			if (pos.Row < 0 || pos.Col < 0 ||
+				pos.Row >= GameConfig.Rows || pos.Col >= GameConfig.Columns)
+				return true;
+
+			if (currentState == GameState.PlayerDeploy)
+			{
+				if (!IsCellDeployable(pos))
+					return true;
+			}
+			else
+			{
+				if (IsCellDeployable(pos))
+					return true;
+			}
+		}
+		return false;
+	}
+	void TryDeployAt(CellPosition pos)
+	{
+		if (SelctShipPvi == null)
+		{
+			var cell = cellStates[pos];
+			if (cell.OccupiedBy != null && ThisRoundPlayer?.Ships.Contains(cell.OccupiedBy) == true)
+			{
+				var ship = cell.OccupiedBy;
+				ThisRoundPlayer.Ships.Remove(ship);
+				SelctShipPvi = ship;
+
+				foreach (var p in ship.OccupyGrid ?? Enumerable.Empty<CellPosition>())
+				{
+					cellStates[p].OccupiedBy = null;
+				}
+			}
+			return;
+		}
+
+		var shipToDeploy = SelctShipPvi;
+
+		if (shipToDeploy.OccupyGrid == null)
+			return;
+
+		bool canDeploy = shipToDeploy.OccupyGrid.All(p =>
+			cellStates.ContainsKey(p) &&
+			IsCellDeployable(p) &&
+			cellStates[p].Terrain == shipToDeploy.Terrain &&
+			!cellStates[p].IsOccupied
+		);
+
+		if (!canDeploy)
+			return;
+
+		foreach (var p in shipToDeploy.OccupyGrid)
+		{
+			cellStates[p].OccupiedBy = shipToDeploy;
+		}
+
+		ThisRoundPlayer?.Ships.Add(shipToDeploy);
+		SelctShipPvi = null;
+	}
+	bool IsCellDeployable(CellPosition pos)
+	{
+		if (ThisRoundPlayer == Player1)
+			return pos.Col < SetupConfig.Columns;
+		if (ThisRoundPlayer == Player2)
+			return pos.Col >= SetupConfig.Columns;
+		return false;
+	}
+	void IncrementRows()
+	{
+		if (SetupConfig.Rows < 18)
+		{
+			SetupConfig.Rows++;
+			cellStates = BoardBuilder.BuildEmptyBoard(
+							SetupConfig.Rows,
+							SetupConfig.Columns,
+							TerrainType.Sea,
+							cellStates
+							);
+		}
+	}
+	void DecrementRows()
+	{
+		if (SetupConfig.Rows > 6)
+		{
+			SetupConfig.Rows--;
+			cellStates = BoardBuilder.BuildEmptyBoard(
+							SetupConfig.Rows,
+							SetupConfig.Columns,
+							TerrainType.Sea,
+							cellStates
+							);
+		}
+	}
+	void IncrementCols()
+	{
+		if (SetupConfig.Columns < 12)
+		{
+			SetupConfig.Columns++;
+			cellStates = BoardBuilder.BuildEmptyBoard(
+							SetupConfig.Rows,
+							SetupConfig.Columns,
+							TerrainType.Sea,
+							cellStates
+							);
+		}
+	}
+	void DecrementCols()
+	{
+		if (SetupConfig.Columns > 4)
+		{
+			SetupConfig.Columns--;
+			cellStates = BoardBuilder.BuildEmptyBoard(
+							SetupConfig.Rows,
+							SetupConfig.Columns,
+							TerrainType.Sea,
+							cellStates
+							);
+		}
+	}
+	void IncrementBudget()
+	{
+		if (SetupConfig.InitialBudget < 1000)
+		{
+			SetupConfig.InitialBudget += 10;
+		}
+	}
+	void DecrementBudget()
+	{
+		if (SetupConfig.InitialBudget > 100)
+		{
+			SetupConfig.InitialBudget -= 10;
+		}
+	}
+	void checkGameResult()
+	{
+		List<bool> playerWin = new();
+		for (int i = 0; i < Players.Count; i++)
+		{
+			bool stillFight = Players[i].Ships.Any(s => s.IsSurvive(cellStates) && s.IsShip);
+			playerWin.Add(!stillFight);
+		}
+		if (playerWin.All(win => !win))
+		{
+			return;
+		}
+		else if (playerWin.All(win => win))
+		{
+			isGameOver = true;
+			screenText = "平手！";
+
+		}
+		else
+		{
+			int winnerIndex = playerWin.FindIndex(win => !win);
+			var winner = Players[winnerIndex];
+			isGameOver = true;
+			screenText = $"{winner.Name} 獲勝！";
+		}
+		Task.Run(async () => await NextState(GameState.Finish));
+	}
+	protected override void OnInitialized()
+	{
+		cellStates = BoardBuilder.BuildEmptyBoard(SetupConfig.Rows, SetupConfig.Columns);
+	}
+	void ToggleTerrain(CellPosition pos)
+	{
+		if (!cellStates.ContainsKey(pos)) return;
+		var cell = cellStates[pos];
+		cell.Terrain = cell.Terrain == TerrainType.Sea ? TerrainType.Island : TerrainType.Sea;
+	}
+	async Task SelectUnit(UnitTypeInfo unit)
+	{
+		if (ThisRoundPlayer is not { } player)
+			return;
+
+		int Deposit = SelctShipPvi?.Price ?? 0;
+		player.Budget += Deposit;
+
+		if (player.Budget >= unit.Price)
+		{
+			player.Budget -= unit.Price;
+			int angle = (ThisRoundPlayer == Player1) ? 180 : 0;
+			SelctShipPvi = Ship.FromTemplate(unit, angle);
+		}
+		else
+		{
+			SelctShipPvi = null;
+			if (floatingTipRef != null)
+				await floatingTipRef.ShowTipAsync("預算不足");
+		}
+	}
+	void CancelSelection()
+	{
+		if (ThisRoundPlayer is not { } player)
+			return;
+
+		if (SelctShipPvi != null)
+		{
+			player.Budget += SelctShipPvi.Price;
+			SelctShipPvi = null;
+		}
+	}
+	private void OnPointerMove(MouseEventArgs e)
+	{
+		if (floatingTipRef != null)
+		{
+			floatingTipRef.UpdateTipPosition((int)e.ClientX, (int)e.ClientY);
+		}
+
+	}
+	private void OnPointerTouch(TouchEventArgs e)
+	{
+		if (e.Touches.Length > 0)
+		{
+			if (floatingTipRef != null)
+			{
+				var touch = e.Touches[0];
+				floatingTipRef.UpdateTipPosition((int)touch.ClientX, (int)touch.ClientY);
+			}
+
+		}
+	}
+
+	Player? Player1, Player2, ThisRoundPlayer;
+	List<Player> Players = new();
+	int RoundIndex = 1;
+	BoardConfig SetupConfig = new();
+	BoardConfig GameConfig = new();
+	Dictionary<CellPosition, CellInfo> cellStates = new();
+	GameState currentState = GameState.Menu;
+	bool isTransitioning = false;
+	bool isGameOver = false;
+	string screenText = "";
+	Ship? SelctShipPvi;
+	private int tipX = 0;
+	private int tipY = 0;
+	private int torpedoTimes = 0;
+	private bool IsDrag = false;
+	public CellPosition TargetPos, StartDragPos;
+	public int CursorAngle
+	{
+		get
+		{
+			if (IsDrag && (TargetPos.Row == StartDragPos.Row || TargetPos.Col == StartDragPos.Col))
+			{
+				if ((TargetPos.Row - StartDragPos.Row) == 0)
+				{
+					return (TargetPos.Col - StartDragPos.Col) > 0 ? 180 : 0;
+				}
+				if ((TargetPos.Col - StartDragPos.Col) == 0)
+				{
+					return (TargetPos.Row - StartDragPos.Row) > 0 ? 270 : 90;
+				}
+			}
+			return (ThisRoundPlayer == Player1) ? 180 : 0;
+		}
+	}
+	(int dRow, int dCol) torpedoDir => ((((CursorAngle - 180) % 180) / 90), (((CursorAngle - 90) % 180) / 90));
+	List<(CellPosition, int)> burst = new();
+	List<(CellPosition, int)> RadioWavesPos = new();
+	Cursor? operCursor = new();
+	private List<CellPosition> BombTargets = new();
+	private bool IsAnimationPlaying = false;
+	private bool isRadioing = false;
+	private bool isTorpedoing = false;
+	private Double subsidy = 0.1;
+	List<UnitTypeInfo> AvailableUnits = new()
+{
+	new UnitTypeInfo {
+	Id = UnitType.carrier, Name = "航空母艦", Price = 120,Terrain = TerrainType.Sea,
+	Description = "對3×3區域內進行偵查，並隨機轟炸3格。",
+	Width = 3, Height = 2, UImagePath = "images/UI/carrier.png", UnitImagePath = "images/Unit/carrier.svg",
+	CursorPath = "images/UI/aircraft.svg",CursorRange= 3
+},//航母
+new UnitTypeInfo {
+	Id = UnitType.battleship, Name = "戰艦", Price = 105,Terrain = TerrainType.Sea,
+	Description = "炮擊2×2區域內隨機3格。",
+	Width = 5, Height = 1, UImagePath = "images/UI/battleship.png", UnitImagePath ="images/Unit/battleship.svg",
+	CursorPath = "images/UI/NavalGum.svg",CursorRange= 2
+},//戰艦
+new UnitTypeInfo {
+	Id = UnitType.cruiser, Name = "巡洋艦", Price = 90,Terrain = TerrainType.Sea,
+	Description = "命中可連擊相鄰格，最多3次。",
+	Width = 4, Height = 1, UImagePath = "images/UI/cruiser.png", UnitImagePath ="images/Unit/cruiser.svg",
+	CursorPath = "images/UI/NavalGum.svg",CursorRange= 1
+},//巡洋
+new UnitTypeInfo {
+	Id = UnitType.destroyer, Name = "驅逐艦", Price = 50,Terrain = TerrainType.Sea,
+	Description = "炮擊1格並對該行(或列)進行偵查。",
+	Width = 3, Height = 1, UImagePath = "images/UI/destroyer.png", UnitImagePath ="images/Unit/destroyer.svg",
+	CursorPath = "images/UI/radar.svg",CursorRange= 1
+},//驅逐
+new UnitTypeInfo {
+	Id = UnitType.submarine, Name = "潛艇", Price = 60,Terrain = TerrainType.Sea,
+	Description = "發出射程3格的魚雷，直到撞到島嶼或船隻(含水雷)。",
+	Width = 2, Height = 1, UImagePath = "images/UI/submarine.png", UnitImagePath ="images/Unit/submarine.svg",
+	CursorPath = "images/UI/torpedo.svg",CursorRange= 1
+},//潛艇
+new UnitTypeInfo {
+	Id = UnitType.mine, Name = "水雷", Price = 10,Terrain = TerrainType.Sea,
+	Description = "被摧毀爆炸，連動鏡射位置",
+	Width = 1, Height = 1, UImagePath = "images/UI/mine.png", UnitImagePath ="images/Unit/mine.svg"
+},//水雷
+new UnitTypeInfo {
+	Id = UnitType.radar, Name = "雷達", Price = 45,Terrain = TerrainType.Island,
+	Description = "回合開始時自動偵查1行(或列)",
+	Width = 1, Height = 1, UImagePath = "images/UI/radar.png", UnitImagePath ="images/Unit/radar.svg"
+},//雷達
+new UnitTypeInfo {
+	Id = UnitType.turret, Name = "砲台", Price = 45,Terrain = TerrainType.Island,
+	Description = "回合結束時自動轟炸1格",
+	Width = 1, Height = 1, UImagePath = "images/UI/turret.png", UnitImagePath ="images/Unit/turret.svg"
+}//砲台
+};
+}

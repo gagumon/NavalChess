@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="48.614006mm"
+   height="48.613991mm"
+   viewBox="0 0 48.614006 48.613991"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   sodipodi:docname="船艦美術草稿.svg"
+   xml:space="preserve"
+   inkscape:export-filename="NavalChess\wwwroot\images\UI\arrow.svg"
+   inkscape:export-xdpi="100"
+   inkscape:export-ydpi="100"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+   id="namedview1"
+   pagecolor="#ffffff"
+   bordercolor="#000000"
+   borderopacity="0.25"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:document-units="mm"
+   inkscape:lockguides="false"
+   showgrid="true"
+   inkscape:zoom="1.4142136"
+   inkscape:cx="304.05591"
+   inkscape:cy="957.77611"
+   inkscape:window-width="1920"
+   inkscape:window-height="1009"
+   inkscape:window-x="-8"
+   inkscape:window-y="-8"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="svg1"
+   inkscape:export-bgcolor="#ffffff00"
+   showguides="true"><inkscape:grid
+     id="grid4"
+     units="mm"
+     originx="-95.692991"
+     originy="-143.69296"
+     spacingx="2.0000001"
+     spacingy="1.9999996"
+     empcolor="#0099e5"
+     empopacity="0.30196078"
+     color="#0099e5"
+     opacity="0.14901961"
+     empspacing="8"
+     enabled="true"
+     visible="true"
+     snapvisiblegridlinesonly="true"
+     dotted="false" /><inkscape:page
+     x="0"
+     y="0"
+     width="48.614006"
+     height="48.613991"
+     id="page2"
+     margin="0"
+     bleed="0" /></sodipodi:namedview><defs
+   id="defs1" />
+
+<rect
+   style="fill:#fffc00;fill-opacity:0.4;stroke:#f4e000;stroke-width:0.614;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+   id="rect1"
+   width="48"
+   height="47.999989"
+   x="0.30700651"
+   y="0.30699447"
+   inkscape:export-filename="NavalChess\wwwroot\images\UI\aircraft.svg"
+   inkscape:export-xdpi="100"
+   inkscape:export-ydpi="100" /><g
+   id="layer1-1"
+   inkscape:label="wirelizard-Top-down-Airplane-View.svg"
+   transform="matrix(0,-0.09993632,0.09993632,0,-40.133928,54.53229)"
+   style="fill:#cdb400;fill-opacity:0.808824;stroke:none;stroke-opacity:1">
+    <path
+   id="path3476"
+   sodipodi:nodetypes="csssssssssssssssscccssssssssssssssssscsccccccsssc"
+   style="fill:#cdb400;fill-opacity:0.808824;stroke:none;stroke-width:0.917363;stroke-opacity:1"
+   d="m 301.7591,502.21059 c -0.70637,0 -2.65118,3.09152 -4.29326,6.87105 -4.3483,9.99009 -4.63268,10.41207 -7.35725,10.82489 -1.36687,0.20182 -3.06399,1.05496 -3.77036,1.89894 -0.70637,0.85315 -2.88052,9.15528 -4.85285,18.44817 -2.89887,13.65954 -3.60524,19.81505 -3.62359,32.14441 -0.009,8.3847 -0.43116,15.86121 -0.93571,16.65014 -0.67885,1.08249 -18.91603,1.61456 -73.73765,2.12828 -40.06125,0.37612 -78.85654,1.0091 -86.20462,1.38522 -18.363778,0.92654 -17.562003,-0.26603 -17.212488,25.83295 0.152283,11.32944 0.700868,21.04431 1.232938,21.58556 1.13294,1.1467 3.72082,1.43108 81.91044,8.54982 32.85995,2.99061 67.70141,6.16468 77.43463,7.05452 9.73322,0.88985 18.17296,2.06407 18.7509,2.65118 1.06414,1.08249 2.17415,7.43065 11.34779,63.16963 3.44928,20.96175 4.89871,32.62144 4.14648,33.38285 -0.64216,0.64216 -13.03573,2.61449 -27.5209,4.40334 -18.32892,2.25672 -27.26403,3.88962 -29.41984,5.30236 l -3.10068,2.0182 0.82562,15.08145 c 0.45868,8.30214 1.22927,15.52179 1.71547,16.01717 0.4862,0.49537 14.55856,0.93571 31.28209,1.00909 18.72338,0.0734 31.00687,0.58712 31.92424,1.33935 0.82562,0.66968 1.4953,3.74285 1.4953,6.83436 0,3.09151 0.3486,5.98121 0.77976,6.42154 2.54109,2.53193 5.19227,-1.82555 5.19227,-8.54982 0,-3.21077 0.58712,-4.96294 1.87142,-5.44914 1.03662,-0.40364 15.54931,-0.71554 32.25449,-0.71554 16.70519,0 30.42894,-0.12843 30.46564,-0.29356 0.6605,-3.08234 1.09166,-25.08988 0.55959,-27.92453 -1.22927,-6.58667 -5.43997,-8.1095 -33.1902,-11.87986 -13.62285,-1.8439 -25.40179,-3.75201 -26.20907,-4.25656 -1.13753,-0.6972 -0.43116,-7.63247 3.13738,-30.53902 2.5411,-16.30155 5.76104,-37.56603 7.16461,-47.22586 1.40356,-9.65984 2.82548,-17.83354 3.17408,-18.18214 0.35777,-0.35777 32.32787,-4.13731 71.04978,-8.40305 38.7219,-4.26574 78.21438,-8.61404 87.74579,-9.66901 9.52223,-1.05496 17.98949,-2.49522 18.81511,-3.17407 0,0 0.78894,-10.0543 1.15588,-20.09026 0.36695,-10.02678 0.30273,-20.04438 0.30273,-20.04438 -0.20182,-1.51365 -1.36687,-2.77961 -2.24754,-3.99971 l -2.27506,-2.79795 -87.03025,-0.59629 -87.03024,-0.59629 -0.77976,-17.36568 c -0.77976,-17.118 -4.26574,-37.82289 -7.80676,-46.29015 -1.08249,-2.59614 -3.07317,-4.60516 -5.64179,-5.67848 -2.642,-1.11001 -4.43086,-2.97225 -5.41244,-5.59591 -3.07317,-8.28379 -4.84368,-11.68721 -6.08212,-11.68721 z" />
+  </g>
+  
+
+  </svg>

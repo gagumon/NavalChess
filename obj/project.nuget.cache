@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "EeEvXE3SqPo=",
+  "dgSpecHash": "sXNLMLQ5Oq4=",
   "success": true,
   "projectFilePath": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\NavalChess.csproj",
   "expectedPackageFiles": [
@@ -28,10 +28,10 @@
     "C:\\Users\\gagum\\.nuget\\packages\\microsoft.extensions.primitives\\8.0.0\\microsoft.extensions.primitives.8.0.0.nupkg.sha512",
     "C:\\Users\\gagum\\.nuget\\packages\\microsoft.jsinterop\\8.0.10\\microsoft.jsinterop.8.0.10.nupkg.sha512",
     "C:\\Users\\gagum\\.nuget\\packages\\microsoft.jsinterop.webassembly\\8.0.10\\microsoft.jsinterop.webassembly.8.0.10.nupkg.sha512",
-    "C:\\Users\\gagum\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.10\\microsoft.net.illink.tasks.8.0.10.nupkg.sha512",
-    "C:\\Users\\gagum\\.nuget\\packages\\microsoft.net.sdk.webassembly.pack\\8.0.10\\microsoft.net.sdk.webassembly.pack.8.0.10.nupkg.sha512",
+    "C:\\Users\\gagum\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.18\\microsoft.net.illink.tasks.8.0.18.nupkg.sha512",
+    "C:\\Users\\gagum\\.nuget\\packages\\microsoft.net.sdk.webassembly.pack\\9.0.7\\microsoft.net.sdk.webassembly.pack.9.0.7.nupkg.sha512",
     "C:\\Users\\gagum\\.nuget\\packages\\system.io.pipelines\\8.0.0\\system.io.pipelines.8.0.0.nupkg.sha512",
-    "C:\\Users\\gagum\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.10\\microsoft.netcore.app.runtime.mono.browser-wasm.8.0.10.nupkg.sha512"
+    "C:\\Users\\gagum\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.18\\microsoft.netcore.app.runtime.mono.browser-wasm.8.0.18.nupkg.sha512"
   ],
   "logs": []
 }

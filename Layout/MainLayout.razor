@@ -1,5 +1,21 @@
 ﻿@inherits LayoutComponentBase
+@inject NavalChess.Screen.ScreenService ScreenService
 @using NavalChess.Pages
-<div class="MainPage">
+@using NavalChess.Models
+
+<div class="MainPage" style="--scr-width:@(width)px">
     <GameBoard />
 </div>
+
+@code {
+    private NavalChess.Screen.ScreenData? data;
+    private int width;
+
+    protected override async Task OnInitializedAsync()
+    {
+        data = await ScreenService.GetScreenResolutionAsync();
+        width = data.Width;
+
+        Console.WriteLine($"螢幕寬度: {width}");
+    }
+}

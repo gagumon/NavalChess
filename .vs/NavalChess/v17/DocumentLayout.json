@@ -3,32 +3,28 @@
   "WorkspaceRootPath": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{04E55238-9756-4AD1-908E-B3FE4048642A}|NavalChess.csproj|d:\\gamedesign\\navalbattlegame_web\\navalchess\\pages\\gameboard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{04E55238-9756-4AD1-908E-B3FE4048642A}|NavalChess.csproj|solutionrelative:pages\\gameboard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{04E55238-9756-4AD1-908E-B3FE4048642A}|NavalChess.csproj|d:\\gamedesign\\navalbattlegame_web\\navalchess\\core\\celllogic.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{04E55238-9756-4AD1-908E-B3FE4048642A}|NavalChess.csproj|solutionrelative:core\\celllogic.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{04E55238-9756-4AD1-908E-B3FE4048642A}|NavalChess.csproj|d:\\gamedesign\\navalbattlegame_web\\navalchess\\wwwroot\\css\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{04E55238-9756-4AD1-908E-B3FE4048642A}|NavalChess.csproj|solutionrelative:wwwroot\\css\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+      "AbsoluteMoniker": "D:0:0:{04E55238-9756-4AD1-908E-B3FE4048642A}|NavalChess.csproj|d:\\gamedesign\\navalbattlegame_web\\navalchess\\pages\\gameboard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{04E55238-9756-4AD1-908E-B3FE4048642A}|NavalChess.csproj|solutionrelative:pages\\gameboard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{04E55238-9756-4AD1-908E-B3FE4048642A}|NavalChess.csproj|d:\\gamedesign\\navalbattlegame_web\\navalchess\\components\\floatingtip.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{04E55238-9756-4AD1-908E-B3FE4048642A}|NavalChess.csproj|solutionrelative:components\\floatingtip.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{04E55238-9756-4AD1-908E-B3FE4048642A}|NavalChess.csproj|d:\\gamedesign\\navalbattlegame_web\\navalchess\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{04E55238-9756-4AD1-908E-B3FE4048642A}|NavalChess.csproj|solutionrelative:layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{04E55238-9756-4AD1-908E-B3FE4048642A}|NavalChess.csproj|d:\\gamedesign\\navalbattlegame_web\\navalchess\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{04E55238-9756-4AD1-908E-B3FE4048642A}|NavalChess.csproj|solutionrelative:layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{04E55238-9756-4AD1-908E-B3FE4048642A}|NavalChess.csproj|d:\\gamedesign\\navalbattlegame_web\\navalchess\\components\\floatingtip.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
       "RelativeMoniker": "D:0:0:{04E55238-9756-4AD1-908E-B3FE4048642A}|NavalChess.csproj|solutionrelative:components\\floatingtip.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{04E55238-9756-4AD1-908E-B3FE4048642A}|NavalChess.csproj|d:\\gamedesign\\navalbattlegame_web\\navalchess\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{04E55238-9756-4AD1-908E-B3FE4048642A}|NavalChess.csproj|solutionrelative:app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{04E55238-9756-4AD1-908E-B3FE4048642A}|NavalChess.csproj|d:\\gamedesign\\navalbattlegame_web\\navalchess\\wwwroot\\css\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{04E55238-9756-4AD1-908E-B3FE4048642A}|NavalChess.csproj|solutionrelative:wwwroot\\css\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{04E55238-9756-4AD1-908E-B3FE4048642A}|NavalChess.csproj|d:\\gamedesign\\navalbattlegame_web\\navalchess\\pages\\counter.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{04E55238-9756-4AD1-908E-B3FE4048642A}|NavalChess.csproj|solutionrelative:pages\\counter.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
   "DocumentGroupContainers": [
@@ -38,44 +34,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 3,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "MainLayout.razor",
-              "DocumentMoniker": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\Layout\\MainLayout.razor",
-              "RelativeDocumentMoniker": "Layout\\MainLayout.razor",
-              "ToolTip": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\Layout\\MainLayout.razor",
-              "RelativeToolTip": "Layout\\MainLayout.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAGAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-26T05:18:59.032Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "NavMenu.razor",
-              "DocumentMoniker": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\Layout\\NavMenu.razor",
-              "RelativeDocumentMoniker": "Layout\\NavMenu.razor",
-              "ToolTip": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\Layout\\NavMenu.razor",
-              "RelativeToolTip": "Layout\\NavMenu.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-26T05:16:25.403Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "FloatingTip.razor.css",
-              "DocumentMoniker": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\Components\\FloatingTip.razor.css",
-              "RelativeDocumentMoniker": "Components\\FloatingTip.razor.css",
-              "ToolTip": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\Components\\FloatingTip.razor.css",
-              "RelativeToolTip": "Components\\FloatingTip.razor.css",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAASAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2025-06-26T05:14:39.183Z"
-            },
             {
               "$type": "Document",
               "DocumentIndex": 2,
@@ -84,46 +44,70 @@
               "RelativeDocumentMoniker": "Components\\FloatingTip.razor",
               "ToolTip": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\Components\\FloatingTip.razor",
               "RelativeToolTip": "Components\\FloatingTip.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-26T05:12:14.764Z"
+              "WhenOpened": "2025-06-30T16:24:54.393Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "FloatingTip.razor.css",
+              "DocumentMoniker": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\Components\\FloatingTip.razor.css",
+              "RelativeDocumentMoniker": "Components\\FloatingTip.razor.css",
+              "ToolTip": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\Components\\FloatingTip.razor.css",
+              "RelativeToolTip": "Components\\FloatingTip.razor.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-06-30T16:24:52.295Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "app.css",
-              "DocumentMoniker": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\wwwroot\\css\\app.css",
-              "RelativeDocumentMoniker": "wwwroot\\css\\app.css",
-              "ToolTip": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\wwwroot\\css\\app.css",
-              "RelativeToolTip": "wwwroot\\css\\app.css",
-              "ViewState": "AgIAAK0BAAAAAAAAAAAAALsBAAARAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2025-06-26T05:10:46.236Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "App.razor",
-              "DocumentMoniker": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\App.razor",
-              "RelativeDocumentMoniker": "App.razor",
-              "ToolTip": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\App.razor",
-              "RelativeToolTip": "App.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-26T05:10:34.729Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
               "Title": "GameBoard.razor",
               "DocumentMoniker": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\Pages\\GameBoard.razor",
               "RelativeDocumentMoniker": "Pages\\GameBoard.razor",
               "ToolTip": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\Pages\\GameBoard.razor",
               "RelativeToolTip": "Pages\\GameBoard.razor",
-              "ViewState": "AgIAAMUAAAAAAAAAAAAswNcAAAANAAAAAAAAAA==",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAAAAcAAAA6AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-26T05:00:10.247Z",
+              "WhenOpened": "2025-06-30T16:23:19.892Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "CellLogic.cs",
+              "DocumentMoniker": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\core\\CellLogic.cs",
+              "RelativeDocumentMoniker": "core\\CellLogic.cs",
+              "ToolTip": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\core\\CellLogic.cs",
+              "RelativeToolTip": "core\\CellLogic.cs",
+              "ViewState": "AgIAAPYCAAAAAAAAAAAswBkDAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T15:07:04.061Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Counter.razor",
+              "DocumentMoniker": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\Pages\\Counter.razor",
+              "RelativeDocumentMoniker": "Pages\\Counter.razor",
+              "ToolTip": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\Pages\\Counter.razor",
+              "RelativeToolTip": "Pages\\Counter.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-06-30T16:28:45.881Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "app.css",
+              "DocumentMoniker": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\wwwroot\\css\\app.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\app.css",
+              "ToolTip": "D:\\GameDesign\\NavalBattleGame_Web\\NavalChess\\wwwroot\\css\\app.css",
+              "RelativeToolTip": "wwwroot\\css\\app.css",
+              "ViewState": "AgIAALQAAAAAAAAAAAAAAMAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-06-29T19:03:09.474Z"
             }
           ]
         }

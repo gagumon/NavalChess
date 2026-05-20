@@ -1,7 +1,8 @@
 ﻿@page "/game"
 @using NavalChess.Components
 @using NavalChess.Models
-<div style="position: relative;width: 100%"
+@inject NavalChess.Screen.ScreenService ScreenService
+<div style="position: relative;width: 100%;touch-action: none;"
 	 @onmousemove="OnPointerMove"
 	 @ontouchstart="OnPointerTouch">
 	<FloatingTip @ref="floatingTipRef" X="@tipX" Y="@tipY" />
@@ -17,7 +18,8 @@
 		{
 			case GameState.Menu:
 				<div>
-					<button class="btn btn-primary" @onclick="() => NextState(GameState.Setup)">單機模式</button>
+					<button class="btn btn-primary" @onclick="() => StartSingleMode()">單機模式</button>
+					<button class="btn btn-primary" @onclick="() => StartAIMode()">人機模式</button>
 					<button class="btn btn-secondary" disabled>線上對戰（未開放）</button>
 				</div>
 				break;
@@ -80,46 +82,56 @@
 							</div>
 						</div>
 						<!-- 棋盤 -->
-						<div class="full-board" style="--rows:@GameConfig.Rows; --cols:@GameConfig.Columns; --cell-size:@($"{BoardConfig.CellSize}px")">
-							@for (int row = 0; row < GameConfig.Rows; row++)
+						<div class="full-board" style="--rows:@GameConfig.Rows + 1; --cols:@GameConfig.Columns + 2; --cell-size:@($"{BoardConfig.CellSize}px")">
+							@for (int row = 0; row <= GameConfig.Rows; row++)
 							{
-								for (int col = 0; col < GameConfig.Columns; col++)
+								for (int col = -1; col <= GameConfig.Columns; col++)
 								{
-									var pos = new CellPosition(row, col);
-									var cell = cellStates[pos];
-									@if (SelctShipPvi != null)
+									if ((row == GameConfig.Rows && col == -1) || (row == GameConfig.Rows && col == GameConfig.Columns) || row == GameConfig.Rows || col == -1 || col == GameConfig.Columns)
 									{
-										string bg = GetBgColor(pos, SelctShipPvi);
-										<div class="cell"
-											 style="background-color:@bg"
-											 @onmouseover="() => SelctShipPvi.CenterPoint = pos"
-											 @ontouchmove="() =>SelctShipPvi.CenterPoint=pos"
-											 @onclick="() => TryDeployAt(pos)">
-										</div>
-										if (SelctShipPvi.OccupyGrid != null && !IsCross(SelctShipPvi.OccupyGrid.ToArray()))
-										{
-											var previewStyle = SelctShipPvi.GetStylePos(currentState);
-											<div class="ship" style="@previewStyle"></div>
-										}
+										<div class="corner-label"></div>
 									}
 									else
 									{
-										string bg = GetBgColor(pos);
-										<div class="cell"
-											 style="background-color:@bg"
-											 @onclick="() => TryDeployAt(pos)">
-										</div>
+										var pos = new CellPosition(row, col);
+										var cell = cellStates[pos];
+										@if (SelctShipPvi != null)
+										{
+											string bg = GetBgColor(pos, SelctShipPvi);
+											<div class="cell"
+												 style="background-color:@bg"
+												 @onmouseover="() => SelctShipPvi.CenterPoint = pos"
+												 @ontouchmove="() =>SelctShipPvi.CenterPoint=pos"
+												 @onclick="() => TryDeployAt(pos)">
+											</div>
+											if (SelctShipPvi.OccupyGrid != null && !IsCross(SelctShipPvi.OccupyGrid.ToArray()))
+											{
+												var previewStyle = SelctShipPvi.GetStylePos();
+												<div class="ship" style="@previewStyle"></div>
+											}
+										}
+										else
+										{
+											string bg = GetBgColor(pos);
+											<div class="cell"
+												 style="background-color:@bg"
+												 @onclick="() => TryDeployAt(pos)">
+											</div>
+										}
 									}
 								}
 							}
 							@foreach (var deployed in ThisRoundPlayer?.Ships ?? Enumerable.Empty<Ship>())
 							{
-								var tempStyle = deployed.GetStylePos(currentState);
+								var tempStyle = deployed.GetStylePos();
 								<div class="ship" style="@tempStyle"></div>
 							}
 						</div>
 						<!-- 完成布署按鈕 -->
-						<button class="u-btn" style="background-color: forestgreen;" @onclick="() => CompleteDeployment()">完成部屬</button>
+						<div class="subordinate-info">
+							<button class="u-btn" style="background-color: forestgreen;" @onclick="() => CompleteDeployment()">完成佈署</button>
+							<button class="u-btn" style="background-color: DarkCyan;" @onclick="() => RandomDeploy()">隨機佈署</button>
+						</div>
 					</div>
 					<!-- 選購清單 -->
 					<div class="unit-panel">
@@ -180,6 +192,8 @@
 					</div>
 					<div class="deploy-column-center">
 						<img src="images\UI\arrow.svg" alt="回合箭頭" style="transform: @($"scaleX({1-(RoundIndex % Players.Count) * 2})"); width:25px; height:25px; object-fit:contain;">
+						<button class="u-btn" style="background-color: forestgreen;" @onclick="() => JustTest()">測試按鈕</button>
+						<span>@testText</span>
 						<div class="combat-board-wrapper">
 							@{
 								var cntLineTop = 17;
@@ -218,10 +232,18 @@
 												{
 													<span class="dectnum">@cell.DectNum</span>
 												}
-												@if (cell != null && cell.IsCheck && cell.IsOccupied)
+												@if (cell != null && cell.IsCheck && cell.IsOccupied && cell.OccupiedBy is Ship ship && ship.Id != UnitType.mine)
 												{
 													<div class="fire-flame"></div>
 												}
+												<!--以下測試-->
+												@if (probTest && col >= SetupConfig.Columns)
+												{
+													probTable.TryGetValue(pos, out var Prob);
+													var tempText = $"{Prob * 100:F0}%";
+													<span>@tempText</span>
+												}
+												<!--以上測試-->
 											</div>
 										}
 									}
@@ -232,7 +254,7 @@
 									{
 										if (!exposed.IsSurvive(cellStates))
 										{
-											var tempStyle = exposed.GetStylePos(currentState);
+											var tempStyle = exposed.GetStylePos();
 											<div class="ship" style="@tempStyle"></div>
 										}
 									}
@@ -329,7 +351,7 @@
 									{
 										<span class="dectnum">@cell.DectNum</span>
 									}
-									@if (cell != null && cell.IsCheck && cell.IsOccupied)
+									@if (cell != null && cell.IsCheck && cell.IsOccupied && cell.OccupiedBy is Ship ship && ship.Id != UnitType.mine)
 									{
 										<div class="fire-flame"></div>
 									}
@@ -343,7 +365,7 @@
 						{
 							if (!exposed.IsSurvive(cellStates) || isGameOver)
 							{
-								var tempStyle = exposed.GetStylePos(currentState);
+								var tempStyle = exposed.GetStylePos();
 								<div class="ship" style="@tempStyle"></div>
 							}
 						}
@@ -421,25 +443,13 @@
 		{
 			if (operCursor != null)
 			{
-				if (operCursor.Id == UnitType.destroyer)
-				{
-					attrs["onmousedown"] = EventCallback.Factory.Create(this, () => FireVectorStart(pos));
-					attrs["ontouchstart"] = EventCallback.Factory.Create(this, () => FireVectorStart(pos));
-					attrs["onmousemove"] = EventCallback.Factory.Create(this, () => TargetPos = pos);
-					attrs["ontouchmove"] = EventCallback.Factory.Create(this, () => TargetPos = pos);
-					attrs["onmouseup"] = EventCallback.Factory.Create(this, () => FireVectorEnd(pos));
-					attrs["ontouchend"] = EventCallback.Factory.Create(this, () => FireVectorEnd(pos));
-				}
-				else if (operCursor.Id == UnitType.submarine)
+				if (operCursor.Id == UnitType.submarine)
 				{
 					if ((cellStates[pos].Terrain == TerrainType.Sea))
 					{
-						attrs["onmousedown"] = EventCallback.Factory.Create(this, () => FireVectorStart(pos));
-						attrs["ontouchstart"] = EventCallback.Factory.Create(this, () => FireVectorStart(pos));
-						attrs["onmousemove"] = EventCallback.Factory.Create(this, () => TargetPos = pos);
+						attrs["onclick"] = EventCallback.Factory.Create(this, () => FireTarget(pos));
+						attrs["onmouseover"] = EventCallback.Factory.Create(this, () => TargetPos = pos);
 						attrs["ontouchmove"] = EventCallback.Factory.Create(this, () => TargetPos = pos);
-						attrs["onmouseup"] = EventCallback.Factory.Create(this, () => FireVectorEnd(pos));
-						attrs["ontouchend"] = EventCallback.Factory.Create(this, () => FireVectorEnd(pos));
 					}
 				}
 				else
@@ -488,8 +498,9 @@
 		}
 		else if (nextState == GameState.PlayerDeploy)
 		{
+			BoardConfig.CellSize = await CheckScreen();
 			GameConfig = new BoardConfig(SetupConfig.Rows, SetupConfig.Columns * 2, BoardConfig.CellSize, SetupConfig.InitialBudget);
-			cellStates = BoardBuilder.BuildMirroredBoard(SetupConfig, cellStates);
+			cellStates = BoardConfig.BuildMirroredBoard(SetupConfig, cellStates);
 			Player1 = Player.Create("玩家一", GameConfig.InitialBudget);
 			Player2 = Player.Create("玩家二", (int)Math.Round(GameConfig.InitialBudget * (1 + subsidy)));
 			Players.Add(Player1); Players.Add(Player2);
@@ -611,7 +622,113 @@
 						hitProgram(pos);
 						IsAnimationPlaying = false;
 						BombTargets.Clear();
-						if (burst.Count > 0) return;
+						if (burst.Count > 0) 
+						{
+							if (IsAIMode && ThisRoundPlayer == Players[AIPlayerIndex]) { _ = Task.Run(() => AIPlay()); } //AI Mode
+							return; 
+						}
+						break;
+					}
+				case UnitType.destroyer:
+					{
+						if (!IsDrag)
+						{
+							IsDrag = true;
+							StartDragPos = pos;
+							return;
+						}
+						else
+						{
+							if (TargetPos.Row == StartDragPos.Row || TargetPos.Col == StartDragPos.Col)
+							{
+								List<CellPosition> list = new() { StartDragPos };
+								BombTargets = list;
+								IsAnimationPlaying = true;
+								isRadioing = true;
+								RadioWavesPos.Add((StartDragPos, CursorAngle));
+								StateHasChanged();
+								await Task.Delay(1000);
+								hitProgram(StartDragPos);
+								if (CursorAngle % 180 == 0)
+								{
+									int c = (ThisRoundPlayer == Player1) ? GameConfig.Columns : -1;
+									var labelPos = new CellPosition(StartDragPos.Row, c);
+									cellStates[labelPos].IsDetect = true;
+								}
+								else
+								{
+									int r = GameConfig.Rows;
+									var labelPos = new CellPosition(r, StartDragPos.Col);
+									cellStates[labelPos].IsDetect = true;
+								}
+								IsAnimationPlaying = false;
+								isRadioing = false;
+								IsDrag = false;
+								RadioWavesPos.Clear();
+								BombTargets.Clear();
+								operCursor = null;
+							}
+							else
+							{
+								if (floatingTipRef != null) { await floatingTipRef.ShowTipAsync("選擇一個方向"); }
+								return;
+							}
+						}
+						break;
+					}
+				case UnitType.submarine:
+					{
+						if (!IsDrag)
+						{
+							IsDrag = true;
+							StartDragPos = pos;
+							return;
+						}
+						else
+						{
+							if (TargetPos.Row == StartDragPos.Row || TargetPos.Col == StartDragPos.Col)
+							{
+								var cell = cellStates[StartDragPos];
+								if (cell.Terrain != TerrainType.Sea)
+								{
+									if (floatingTipRef != null) { await floatingTipRef.ShowTipAsync("魚雷只能從海面上發射"); }
+									return;
+								}
+								IsAnimationPlaying = true;
+								isTorpedoing = true;
+								torpedoTimes = 0;
+								for (int s = 0; s < 3; s++)
+								{
+									var dynamic = new CellPosition(
+										StartDragPos.Row + torpedoDir.dRow * s,
+										StartDragPos.Col + torpedoDir.dCol * s);
+
+									if (!cellStates.TryGetValue(dynamic, out var cellNow) ||
+										cellNow.Terrain != TerrainType.Sea ||
+										IsCross(dynamic))
+									{
+										break;
+									}
+									for (int a = 0; a < 5; a++)
+									{
+										torpedoTimes += (BoardConfig.CellSize) / 5;
+										StateHasChanged();
+										await Task.Delay(60);
+									}
+
+									hitProgram(dynamic);
+									if (cellNow.IsOccupied) break;
+								}
+								IsDrag = false;
+								IsAnimationPlaying = false;
+								isTorpedoing = false;
+							}
+							else
+							{
+								if (floatingTipRef != null) { await floatingTipRef.ShowTipAsync("選擇一個方向"); }
+								return;
+							}
+						}
 						break;
 					}
 			}
@@ -622,92 +739,6 @@
 		{
 			string st = (RoundIndex % Players.Count == 0) ? "左" : "右";
 			if (floatingTipRef != null) { await floatingTipRef.ShowTipAsync($"請先從{st}側選擇船艦"); }
-		}
-	}
-	void FireVectorStart(CellPosition pos)
-	{
-		if (operCursor != null && !IsCross(operCursor.GetRangeGrid(TargetPos, CursorAngle).ToArray()))
-		{
-			var cell = cellStates[pos];
-			IsDrag = true;
-			StartDragPos = pos;
-		}
-	}
-	async Task FireVectorEnd(CellPosition pos)
-	{
-		if (operCursor != null && !IsCross(operCursor.GetRangeGrid(TargetPos, CursorAngle).ToArray()))
-		{
-			switch (operCursor.Id)
-			{
-				case UnitType.destroyer:
-					{
-						List<CellPosition> list = new() { StartDragPos };
-						BombTargets = list;
-						IsAnimationPlaying = true;
-						isRadioing = true;
-						RadioWavesPos.Add((StartDragPos, CursorAngle));
-						StateHasChanged();
-						await Task.Delay(1000);
-						hitProgram(StartDragPos);
-						if (CursorAngle % 180 == 0)
-						{
-							int c = (ThisRoundPlayer == Player1) ? GameConfig.Columns : -1;
-							var labelPos = new CellPosition(StartDragPos.Row, c);
-							cellStates[labelPos].IsDetect = true;
-						}
-						else
-						{
-							int r = GameConfig.Rows;
-							var labelPos = new CellPosition(r, StartDragPos.Col);
-							cellStates[labelPos].IsDetect = true;
-						}
-						IsAnimationPlaying = false;
-						isRadioing = false;
-						RadioWavesPos.Clear();
-						BombTargets.Clear();
-						break;
-					}
-				case UnitType.submarine:
-					{
-						var cell = cellStates[StartDragPos];
-						if (cell.Terrain != TerrainType.Sea)
-						{
-							if (floatingTipRef != null) { await floatingTipRef.ShowTipAsync("魚雷只能從海面上發射"); }
-							return;
-						}
-						IsAnimationPlaying = true;
-						isTorpedoing = true;
-						torpedoTimes = 0;
-						for (int s = 0; s < 3; s++)
-						{
-							var dynamic = new CellPosition(
-								StartDragPos.Row + torpedoDir.dRow * s,
-								StartDragPos.Col + torpedoDir.dCol * s);
-
-							if (!cellStates.TryGetValue(dynamic, out var cellNow) ||
-								cellNow.Terrain != TerrainType.Sea ||
-								IsCross(dynamic))
-							{
-								break;
-							}
-							for (int a = 0; a < 5; a++)
-							{
-								torpedoTimes += (BoardConfig.CellSize) / 5;
-								StateHasChanged();
-								await Task.Delay(60);
-							}
-
-							hitProgram(dynamic);
-							if (cellNow.IsOccupied) break;
-						}
-						IsAnimationPlaying = false;
-						isTorpedoing = false;
-						break;
-					}
-			}
-			IsDrag = false;
-			operCursor = null;
-			await NextTurn();
 		}
 	}
 	string GetTorpedoStyle()
@@ -877,8 +908,174 @@
 				}
 				RadioWavesPos.Clear();
 			}
+			if (IsAIMode && (RoundIndex % Players.Count) == AIPlayerIndex && currentState == GameState.CombatPhase)
+			{
+				// 用Task避免UI阻塞
+				_ = Task.Run(() => AIPlay());
+			}
 		}
 	}
+	void JustTest()
+	{
+		var infer = new AIinfer(0, SetupConfig);
+		var emeyShips = Players[1].Ships.Where(s => s.IsShip && s.IsSurvive(cellStates)).OrderByDescending(s => s.Width * s.Height).ToList();
+		foreach (var ship in emeyShips)
+		{ infer.TargetShip.Add((ship.Id, Math.Max(ship.Width, ship.Height), Math.Min(ship.Width, ship.Height))); }
+		testText = infer.TargetShip[0].Item1.ToString();
+		probTest = true;
+		ComplexData baseData = new(Players, GameConfig, cellStates);
+		probTable = infer.GetProbabTable(baseData);
+	}
+
+	string testText = ""; bool probTest = false;
+	Dictionary<CellPosition, float> probTable = new();
+	bool IsAIMode;int AIPlayerIndex ; 
+
+	void StartSingleMode() 
+	{
+		IsAIMode = false;
+		Task.Run(async () => await NextState(GameState.Setup));
+	}
+
+	void StartAIMode() 
+	{
+		IsAIMode = true;
+		AIPlayerIndex = 1;
+		Task.Run(async () => await NextState(GameState.Setup));
+	}
+	private async Task AIPlay()
+	{
+		// 不合法回合直接跳出
+		if (!IsAIMode || !Players[AIPlayerIndex].Ships.Any(s => s.IsSurvive(cellStates) && s.IsShip) || isGameOver)
+			return;
+
+		var rand = new Random();
+
+		// -----------【巡洋艦連擊狀態】-----------
+		if (operCursor != null && operCursor.Id == UnitType.cruiser && burst.Count > 0)
+		{
+			var (hitPoint, num) = burst[0];
+			// 尋找可攻擊的相鄰格
+			var directions = new[] { (0, 1), (0, -1), (1, 0), (-1, 0) };
+			var adjacents = directions
+				.Select(d => new CellPosition(hitPoint.Row + d.Item1, hitPoint.Col + d.Item2))
+				.Where(pos =>
+					cellStates.ContainsKey(pos)
+					&& !cellStates[pos].IsCheck
+					&& cellStates[pos].Terrain == TerrainType.Sea)
+				.ToList();
+
+			if (adjacents.Count == 0) return; // 無可連擊格
+
+			var nextPos = adjacents[rand.Next(adjacents.Count)];
+
+			// AI只用同一艘巡洋艦，直接操作游標
+			await InvokeAsync(() =>
+			{
+				TargetPos = nextPos;
+				StateHasChanged();
+			});
+			await Task.Delay(400);
+			await InvokeAsync(async () =>
+			{
+				await FireTarget(nextPos);
+			});
+			return;
+		}
+
+		// -----------【普通武器決策 & 特殊武器（包含巡洋艦第一次出擊）】-----------
+		var infer = new AIinfer(AIPlayerIndex, SetupConfig);
+		var enemyShips = Players[1 - AIPlayerIndex].Ships.Where(s => s.IsShip && s.IsSurvive(cellStates)).OrderByDescending(s => s.Width * s.Height);
+		foreach (var ship in enemyShips)
+			infer.TargetShip.Add((ship.Id, Math.Max(ship.Width, ship.Height), Math.Min(ship.Width, ship.Height)));
+		ComplexData baseData = new(Players, GameConfig, cellStates);
+		var probTable = infer.GetProbabTable(baseData);
+
+		var availableUnits = Players[AIPlayerIndex].Ships.Where(s => s.IsSurvive(cellStates) && s.IsShip).ToList();
+		if (availableUnits.Count == 0) return;
+
+		// 若上一發是巡洋艦，且 burst 為 0，則這次允許重新選武器
+
+		var weapon = availableUnits[rand.Next(availableUnits.Count)];
+
+		if (weapon.Id == UnitType.destroyer || weapon.Id == UnitType.submarine)
+		{
+			var validStarts = probTable
+				.Where(kv => cellStates[kv.Key].Terrain == TerrainType.Sea && !cellStates[kv.Key].IsCheck)
+				.OrderByDescending(kv => kv.Value)
+				.Select(kv => kv.Key)
+				.ToList();
+			if (validStarts.Count == 0) return;
+			var start = validStarts[0];
+
+			var possibleDirs = new List<(int dRow, int dCol, int angle)>
+		{
+			(0, 1, 180), // 右
+            (0, -1, 0),  // 左
+            (1, 0, 270), // 下
+            (-1, 0, 90)  // 上
+        };
+			(int dRow, int dCol, int angle)? foundDir = null;
+			CellPosition dirTarget = start;
+
+			foreach (var dir in possibleDirs)
+			{
+				int newRow = start.Row + dir.dRow;
+				int newCol = start.Col + dir.dCol;
+				var target = new CellPosition(newRow, newCol);
+				if (cellStates.ContainsKey(target)
+					&& cellStates[target].Terrain == TerrainType.Sea
+					&& !cellStates[target].IsCheck)
+				{
+					foundDir = dir;
+					dirTarget = target;
+					break;
+				}
+			}
+			if (foundDir == null)
+				return;
+
+			await InvokeAsync(() =>
+			{
+				operCursor = Cursor.FromUnitInfo(AvailableUnits.First(u => u.Id == weapon.Id));
+				StateHasChanged();
+			});
+			await InvokeAsync(() =>
+			{
+				IsDrag = true;
+				StartDragPos = start;
+				TargetPos = start;
+				StateHasChanged();
+			});
+			await Task.Delay(400);
+			await InvokeAsync(() =>
+			{
+				TargetPos = dirTarget;
+				StateHasChanged();
+			});
+			await Task.Delay(400);
+			await InvokeAsync(async () =>
+			{
+				await FireTarget(dirTarget);
+			});
+		}
+		else
+		{
+			// 若是巡洋艦，operCursor 要正確設為巡洋艦，連擊才能由AI掌控
+			var topPos = probTable.OrderByDescending(kv => kv.Value).First().Key;
+			await InvokeAsync(() =>
+			{
+				operCursor = Cursor.FromUnitInfo(AvailableUnits.First(u => u.Id == weapon.Id));
+				TargetPos = topPos;
+				StateHasChanged();
+			});
+			await Task.Delay(600);
+			await InvokeAsync(() => FireTarget(topPos));
+		}
+	}
+
+
+
 	async Task CompleteDeployment()
 	{
 		bool haveShip = (ThisRoundPlayer?.Ships ?? Enumerable.Empty<Ship>())
@@ -1078,56 +1275,121 @@
 			return pos.Col >= SetupConfig.Columns;
 		return false;
 	}
-	void IncrementRows()
+	void RandomDeploy()
+	{
+		if (ThisRoundPlayer == null)
+			return;
+
+		Random rand = new Random();
+
+		List<UnitTypeInfo> availablePool = new List<UnitTypeInfo>(AvailableUnits);
+
+		while (availablePool.Count > 0)
+		{
+			int index = rand.Next(availablePool.Count);
+			var unit = availablePool[index];
+
+			if (ThisRoundPlayer.Budget < unit.Price)
+			{
+				availablePool.RemoveAt(index);
+				continue;
+			}
+			bool placed = false;
+			List<int> possibleAngles = [0, 90, 180, 270];
+			possibleAngles = possibleAngles.OrderBy(_ => rand.Next()).ToList();
+			foreach (int angle in possibleAngles)
+			{
+				var tempShip = Ship.FromTemplate(unit, angle);
+				List<CellPosition> candidateCenters = [];
+
+				for (int row = 0; row < GameConfig.Rows; row++)
+				{
+					for (int col = 0; col < GameConfig.Columns; col++)
+					{
+						var pos = new CellPosition(row, col);
+						if (!IsCellDeployable(pos))
+							continue;
+						tempShip.CenterPoint = pos;
+						if (tempShip.OccupyGrid == null || IsCross(tempShip.OccupyGrid.ToArray()))
+							continue;
+						if (!tempShip.OccupyGrid.All(p => cellStates[p].Terrain == tempShip.Terrain && !cellStates[p].IsOccupied))
+							continue;
+						candidateCenters.Add(pos);
+					}
+				}
+
+				if (candidateCenters.Count > 0)
+				{
+					var chosenPos = candidateCenters[rand.Next(candidateCenters.Count)];
+					tempShip.CenterPoint = chosenPos;
+					foreach (var p in tempShip.OccupyGrid!)
+					{
+						cellStates[p].OccupiedBy = tempShip;
+					}
+					ThisRoundPlayer.Budget -= unit.Price;
+					ThisRoundPlayer.Ships.Add(tempShip);
+					placed = true;
+					break;
+				}
+			}
+
+			if (!placed)
+			{
+				availablePool.RemoveAt(index);
+			}
+		}
+	}
+
+	async Task IncrementRows()
 	{
 		if (SetupConfig.Rows < 18)
 		{
 			SetupConfig.Rows++;
-			cellStates = BoardBuilder.BuildEmptyBoard(
+			cellStates = BoardConfig.BuildEmptyBoard(
 							SetupConfig.Rows,
 							SetupConfig.Columns,
-							TerrainType.Sea,
 							cellStates
 							);
+			BoardConfig.CellSize = await CheckScreen();
 		}
 	}
-	void DecrementRows()
+	async Task DecrementRows()
 	{
 		if (SetupConfig.Rows > 6)
 		{
 			SetupConfig.Rows--;
-			cellStates = BoardBuilder.BuildEmptyBoard(
+			cellStates = BoardConfig.BuildEmptyBoard(
 							SetupConfig.Rows,
 							SetupConfig.Columns,
-							TerrainType.Sea,
 							cellStates
 							);
+			BoardConfig.CellSize = await CheckScreen();
 		}
 	}
-	void IncrementCols()
+	async Task IncrementCols()
 	{
 		if (SetupConfig.Columns < 12)
 		{
 			SetupConfig.Columns++;
-			cellStates = BoardBuilder.BuildEmptyBoard(
+			cellStates = BoardConfig.BuildEmptyBoard(
 							SetupConfig.Rows,
 							SetupConfig.Columns,
-							TerrainType.Sea,
 							cellStates
 							);
+			BoardConfig.CellSize = await CheckScreen();
 		}
 	}
-	void DecrementCols()
+	async Task DecrementCols()
 	{
 		if (SetupConfig.Columns > 4)
 		{
 			SetupConfig.Columns--;
-			cellStates = BoardBuilder.BuildEmptyBoard(
+			cellStates = BoardConfig.BuildEmptyBoard(
 							SetupConfig.Rows,
 							SetupConfig.Columns,
-							TerrainType.Sea,
 							cellStates
 							);
+			BoardConfig.CellSize = await CheckScreen();
 		}
 	}
 	void IncrementBudget()
@@ -1171,9 +1433,19 @@
 		}
 		Task.Run(async () => await NextState(GameState.Finish));
 	}
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
-		cellStates = BoardBuilder.BuildEmptyBoard(SetupConfig.Rows, SetupConfig.Columns);
+		cellStates = BoardConfig.BuildEmptyBoard(SetupConfig.Rows, SetupConfig.Columns);
+		BoardConfig.CellSize = await CheckScreen();
+	}
+	private async Task<int> CheckScreen()
+	{
+		var data = await ScreenService.GetScreenResolutionAsync();
+		int cellsize = Math.Min(data.Width, data.Height);
+		cellsize -= 600;
+		int col = (currentState == GameState.CombatPhase) ? GameConfig.Columns : SetupConfig.Columns;
+		cellsize = cellsize / col;
+		return cellsize;
 	}
 	void ToggleTerrain(CellPosition pos)
 	{
@@ -1276,7 +1548,7 @@
 	private bool IsAnimationPlaying = false;
 	private bool isRadioing = false;
 	private bool isTorpedoing = false;
-	private Double subsidy = 0.1;
+	private Double subsidy = 0.08;
 	List<UnitTypeInfo> AvailableUnits = new()
 {
 	new UnitTypeInfo {

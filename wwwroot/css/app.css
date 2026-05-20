@@ -104,7 +104,13 @@ code {
 .MainPage {
     display: grid;
     place-items: center; /* 等同於 justify + align 同時置中 */
-    width:1200px;
+    width: var(--scr-width);
+    margin: 0 auto;
+    height: 100vh;
+}.MainPage {
+    display: grid;
+    place-items: center; /* 等同於 justify + align 同時置中 */
+    width: var(--scr-width);
     margin: 0 auto;
     height: 100vh;
 }
@@ -134,6 +140,8 @@ code {
     align-items: center;
     justify-content: center;
     position: relative;
+    touch-action: none;
+    user-select: none;
 }
     .cell:hover {
         transition: background-color 0.2s ease;

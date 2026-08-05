@@ -945,6 +945,9 @@
 	}
 	private async Task AIPlay()
 	{
+		try
+		{
+			Console.WriteLine("AIPlay invoked");
 		// 不合法回合直接跳出
 		if (!IsAIMode || !Players[AIPlayerIndex].Ships.Any(s => s.IsSurvive(cellStates) && s.IsShip) || isGameOver)
 			return;
@@ -1071,6 +1074,19 @@
 			});
 			await Task.Delay(600);
 			await InvokeAsync(() => FireTarget(topPos));
+		}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine("AIError: " + ex);
+			try
+			{
+				await InvokeAsync(async () =>
+				{
+					if (floatingTipRef != null) { await floatingTipRef.ShowTipAsync("AI錯誤: " + ex.Message); }
+				});
+			}
+			catch { }
 		}
 	}
 

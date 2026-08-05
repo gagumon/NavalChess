@@ -530,14 +530,18 @@
 					{
 						var ranged = operCursor.GetRangeGrid(pos, CursorAngle);
 						Random rand = new();
-						var list = ranged.ToList();
+						// 過濾越界格子，避免邊緣開火崩潰
+						var list = ranged.Where(p => cellStates.ContainsKey(p)).ToList();
 
-						if (list.Count < 3)
-							throw new InvalidOperationException("集合格數小於抽樣數");
+						if (list.Count == 0)
+							return;
+
+						// 範圍內合法格不足 3 格時，全數轟炸
+						int bombCount = Math.Min(list.Count, 3);
 
 						HashSet<int> index = new();
 						int randNum;
-						for (int i = 0; i < 3; i++)
+						for (int i = 0; i < bombCount; i++)
 						{
 							do { randNum = rand.Next(list.Count); }
 							while (index.Contains(randNum));
@@ -564,13 +568,17 @@
 					{
 						var ranged = operCursor.GetRangeGrid(pos, CursorAngle);
 						Random rand = new();
-						var list = ranged.ToList();
+						// 過濾越界格子，避免邊緣開火崩潰
+						var list = ranged.Where(p => cellStates.ContainsKey(p)).ToList();
 
-						if (list.Count < 3)
-							throw new InvalidOperationException("集合格數小於抽樣數");
+						if (list.Count == 0)
+							return;
 
-						int index = rand.Next(list.Count);
-						list.Remove(list[index]);
+						// 2×2 內隨機炸 3 格；合法格不足 3 格時全數轟炸
+						while (list.Count > 3)
+						{
+							list.Remove(list[rand.Next(list.Count)]);
+						}
 
 						BombTargets = list;
 						IsAnimationPlaying = true;
@@ -852,6 +860,19 @@
 		//回合變更
 		RoundIndex += 1;
 		ThisRoundPlayer = Players[(RoundIndex % Players.Count)];
+
+		//佈署階段：AI 玩家自動佈署（理解地形，隨機佈署含島嶼單位優先）
+		if (IsAIMode && currentState == GameState.PlayerDeploy && ThisRoundPlayer == Players[AIPlayerIndex])
+		{
+			_ = Task.Run(async () =>
+			{
+				await Task.Delay(800);
+				await InvokeAsync(RandomDeploy);
+				await Task.Delay(600);
+				await InvokeAsync(async () => await CompleteDeployment());
+			});
+		}
+
 		//回合開始
 		if (currentState == GameState.CombatPhase)
 		{
@@ -1011,9 +1032,24 @@
 		var availableUnits = Players[AIPlayerIndex].Ships.Where(s => s.IsSurvive(cellStates) && s.IsShip).ToList();
 		if (availableUnits.Count == 0) return;
 
-		// 若上一發是巡洋艦，且 burst 為 0，則這次允許重新選武器
-
-		var weapon = availableUnits[rand.Next(availableUnits.Count)];
+		// 【武器選擇】依戰況挑選最合適的船艦
+		// 目標明確（機率高）→ 優先精確單點武器（巡洋艦連擊 / 驅逐艦偵查）
+		// 目標不明（探索期）→ 優先範圍偵查武器（航空母艦 / 戰艦）
+		float maxProb = probTable.Count > 0 ? probTable.Values.Max() : 0f;
+		Ship? weapon;
+		if (maxProb >= 0.4f)
+		{
+			weapon = new[] { UnitType.cruiser, UnitType.destroyer, UnitType.battleship, UnitType.submarine, UnitType.carrier }
+				.Select(id => availableUnits.FirstOrDefault(s => s.Id == id))
+				.FirstOrDefault(s => s != null);
+		}
+		else
+		{
+			weapon = new[] { UnitType.carrier, UnitType.battleship, UnitType.destroyer, UnitType.submarine, UnitType.cruiser }
+				.Select(id => availableUnits.FirstOrDefault(s => s.Id == id))
+				.FirstOrDefault(s => s != null);
+		}
+		weapon ??= availableUnits[rand.Next(availableUnits.Count)];
 
 		if (weapon.Id == UnitType.destroyer || weapon.Id == UnitType.submarine)
 		{
@@ -1321,7 +1357,14 @@
 
 		Random rand = new Random();
 
-		List<UnitTypeInfo> availablePool = new List<UnitTypeInfo>(AvailableUnits);
+		// 理解地形：優先佈署島嶼單位（雷達/砲台）到島嶼格，再隨機佈署海上艦隊
+		DeployPoolUnits(rand, AvailableUnits.Where(u => u.Terrain == TerrainType.Island).ToList());
+		DeployPoolUnits(rand, AvailableUnits.Where(u => u.Terrain != TerrainType.Island).ToList());
+	}
+
+	void DeployPoolUnits(Random rand, List<UnitTypeInfo> pool)
+	{
+		List<UnitTypeInfo> availablePool = new List<UnitTypeInfo>(pool);
 
 		while (availablePool.Count > 0)
 		{

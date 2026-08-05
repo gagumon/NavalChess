@@ -994,6 +994,22 @@
 		ComplexData baseData = new(Players, GameConfig, cellStates);
 		var probTable = infer.GetProbabTable(baseData);
 
+		// 初期沒有偵查資訊時，概率表可能為空 → 以隨機敵方海域格子作為 fallback
+		if (probTable.Count == 0)
+		{
+			var enemySide = 1 - AIPlayerIndex;
+			int startCol = enemySide * SetupConfig.Columns;
+			var fallback = cellStates
+				.Where(kv => kv.Key.Col >= startCol && kv.Key.Col < startCol + SetupConfig.Columns
+					&& kv.Value.Terrain == TerrainType.Sea && !kv.Value.IsCheck)
+				.Select(kv => kv.Key).ToList();
+			foreach (var p in fallback)
+			{
+				probTable[p] = 0.0f;
+			}
+			Console.WriteLine($"AIPlay fallback: probTable empty, fill {fallback.Count} cells");
+		}
+
 		var availableUnits = Players[AIPlayerIndex].Ships.Where(s => s.IsSurvive(cellStates) && s.IsShip).ToList();
 		if (availableUnits.Count == 0) return;
 
@@ -1065,10 +1081,21 @@
 		else
 		{
 			// 若是巡洋艦，operCursor 要正確設為巡洋艦，連擊才能由AI掌控
-			var topPos = probTable.OrderByDescending(kv => kv.Value).First().Key;
+			var weaponCursor = Cursor.FromUnitInfo(AvailableUnits.First(u => u.Id == weapon.Id));
+			// 過濾出開火範圍合法的候選格，避免邊緣越界造成 FireTarget 失敗卡回合
+			var validTargets = probTable
+				.Where(kv => !IsCross(weaponCursor.GetRangeGrid(kv.Key, CursorAngle).ToArray()))
+				.OrderByDescending(kv => kv.Value)
+				.ToList();
+			if (validTargets.Count == 0)
+			{
+				Console.WriteLine("AIPlay: no valid target for " + weapon.Id);
+				return;
+			}
+			var topPos = validTargets[0].Key;
 			await InvokeAsync(() =>
 			{
-				operCursor = Cursor.FromUnitInfo(AvailableUnits.First(u => u.Id == weapon.Id));
+				operCursor = weaponCursor;
 				TargetPos = topPos;
 				StateHasChanged();
 			});

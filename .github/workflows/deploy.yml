@@ -21,8 +21,11 @@ jobs:
         with:
           dotnet-version: '8.0.403'
 
+      # 移除被誤提交的 bin/obj 緩存，強制全新建置，避免 SRI 混搭
       - name: Publish
-        run: dotnet publish -c Release -o publish
+        run: |
+          rm -rf bin obj
+          dotnet publish -c Release -o publish
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4

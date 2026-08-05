@@ -935,6 +935,9 @@
 				_ = Task.Run(() => AIPlay());
 			}
 		}
+		// 確保回合切換後 UI 必定刷新（AI 在 Task.Run 內開火切回合時，若無雷達/砲台動畫，
+		// 不會有任何 StateHasChanged，畫面會停在舊回合直到玩家移動滑鼠觸發重繪）
+		StateHasChanged();
 	}
 	void JustTest()
 	{

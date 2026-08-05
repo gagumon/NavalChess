@@ -947,7 +947,6 @@
 	{
 		try
 		{
-			Console.WriteLine("AIPlay invoked");
 		// 不合法回合直接跳出
 		if (!IsAIMode || !Players[AIPlayerIndex].Ships.Any(s => s.IsSurvive(cellStates) && s.IsShip) || isGameOver)
 			return;
@@ -1007,7 +1006,6 @@
 			{
 				probTable[p] = 0.0f;
 			}
-			Console.WriteLine($"AIPlay fallback: probTable empty, fill {fallback.Count} cells");
 		}
 
 		var availableUnits = Players[AIPlayerIndex].Ships.Where(s => s.IsSurvive(cellStates) && s.IsShip).ToList();
@@ -1089,7 +1087,6 @@
 				.ToList();
 			if (validTargets.Count == 0)
 			{
-				Console.WriteLine("AIPlay: no valid target for " + weapon.Id);
 				return;
 			}
 			var topPos = validTargets[0].Key;
@@ -1105,7 +1102,6 @@
 		}
 		catch (Exception ex)
 		{
-			Console.WriteLine("AIError: " + ex);
 			try
 			{
 				await InvokeAsync(async () =>

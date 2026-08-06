@@ -522,7 +522,7 @@
 	}
 	async Task FireTarget(CellPosition pos)
 	{
-		if (operCursor != null && !IsCross(operCursor.GetRangeGrid(TargetPos, CursorAngle).ToArray()))
+		if (operCursor != null && !IsCross(operCursor.GetRangeGrid(pos, CursorAngle).ToArray()))
 		{
 			switch (operCursor.Id)
 			{
@@ -647,7 +647,8 @@
 						}
 						else
 						{
-							if (TargetPos.Row == StartDragPos.Row || TargetPos.Col == StartDragPos.Col)
+							// 方向以實際點擊/決定的格子為準，避免被滑鼠 hover 覆寫的 TargetPos 干擾
+							if (pos.Row == StartDragPos.Row || pos.Col == StartDragPos.Col)
 							{
 								List<CellPosition> list = new() { StartDragPos };
 								BombTargets = list;
@@ -657,7 +658,7 @@
 								StateHasChanged();
 								await Task.Delay(1000);
 								hitProgram(StartDragPos);
-								if (CursorAngle % 180 == 0)
+								if (pos.Row == StartDragPos.Row)
 								{
 									int c = (ThisRoundPlayer == Player1) ? GameConfig.Columns : -1;
 									var labelPos = new CellPosition(StartDragPos.Row, c);
@@ -694,8 +695,11 @@
 						}
 						else
 						{
-							if (TargetPos.Row == StartDragPos.Row || TargetPos.Col == StartDragPos.Col)
+							// 方向以實際點擊/決定的格子為準，避免被滑鼠 hover 覆寫的 TargetPos 干擾
+							if (pos.Row == StartDragPos.Row || pos.Col == StartDragPos.Col)
 							{
+								// 由實際打擊格計算魚雷方向（不再依賴全域 CursorAngle）
+								torpedoDir = (Math.Sign(pos.Row - StartDragPos.Row), Math.Sign(pos.Col - StartDragPos.Col));
 								var cell = cellStates[StartDragPos];
 								if (cell.Terrain != TerrainType.Sea)
 								{
@@ -760,9 +764,14 @@
 		originLeft = ((originLeft * cellSize) + (cellSize * 3 / 2));
 		originTop = (originTop * cellSize) + (cellSize / 2);
 
+		// 角度由魚雷方向推得（0=左, 180=右, 90=上, 270=下），不依賴全域 CursorAngle
+		int angle = torpedoDir.dRow == 0
+			? (torpedoDir.dCol > 0 ? 180 : 0)
+			: (torpedoDir.dRow > 0 ? 270 : 90);
+
 		return $"top:{originTop + offsetY}px; left:{originLeft + offsetX}px;" +
 						$"width:{BoardConfig.CellSize}px; height:{BoardConfig.CellSize}px;" +
-						$"position:absolute; transform: rotate({CursorAngle}deg);" +
+						$"position:absolute; transform: rotate({angle}deg);" +
 						$"background-image: url('images/effects/torpedo.svg');" +
 						$"background-repeat: no-repeat; z-index:20;";
 	}
@@ -1629,7 +1638,7 @@
 			return (ThisRoundPlayer == Player1) ? 180 : 0;
 		}
 	}
-	(int dRow, int dCol) torpedoDir => ((((CursorAngle - 180) % 180) / 90), (((CursorAngle - 90) % 180) / 90));
+	(int dRow, int dCol) torpedoDir = (0, 0);
 	List<(CellPosition, int)> burst = new();
 	List<(CellPosition, int)> RadioWavesPos = new();
 	Cursor? operCursor = new();

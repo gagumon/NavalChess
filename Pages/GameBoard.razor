@@ -988,7 +988,8 @@
 				.Where(pos =>
 					cellStates.ContainsKey(pos)
 					&& !cellStates[pos].IsCheck
-					&& cellStates[pos].Terrain == TerrainType.Sea)
+					&& cellStates[pos].Terrain == TerrainType.Sea
+					&& !IsCross(pos))
 				.ToList();
 
 			if (adjacents.Count == 0) return; // 無可連擊格
@@ -1057,7 +1058,9 @@
 		if (weapon.Id == UnitType.destroyer || weapon.Id == UnitType.submarine)
 		{
 			var validStarts = probTable
-				.Where(kv => cellStates[kv.Key].Terrain == TerrainType.Sea && !cellStates[kv.Key].IsCheck)
+				.Where(kv => cellStates[kv.Key].Terrain == TerrainType.Sea
+					&& !cellStates[kv.Key].IsCheck
+					&& !IsCross(kv.Key))
 				.OrderByDescending(kv => kv.Value)
 				.Select(kv => kv.Key)
 				.ToList();
@@ -1081,7 +1084,8 @@
 				var target = new CellPosition(newRow, newCol);
 				if (cellStates.ContainsKey(target)
 					&& cellStates[target].Terrain == TerrainType.Sea
-					&& !cellStates[target].IsCheck)
+					&& !cellStates[target].IsCheck
+					&& !IsCross(target))
 				{
 					foundDir = dir;
 					dirTarget = target;

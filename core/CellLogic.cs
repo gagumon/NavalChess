@@ -249,39 +249,30 @@ namespace NavalChess.Models
 		}
 		public string? GetStylePos(CellPosition pos, int angle)
 		{
-			int offsetX = 0;
-			int offsetY = 0;
+			// 以實際打擊範圍（GetRangeGrid 產生的格子）的外包框定位，
+			// 避免游標矩形與打擊範圍錯位、或超出棋盤邊界（跳脫）。
+			var grid = GetRangeGrid(pos, angle);
+			if (grid.Count == 0)
+				return null;
+
+			int minRow = grid.Min(p => p.Row);
+			int maxRow = grid.Max(p => p.Row);
+			int minCol = grid.Min(p => p.Col);
+			int maxCol = grid.Max(p => p.Col);
 
 			var size = BoardConfig.CellSize;
-			if (angle == 0)
-			{
-				offsetX = ((Range - 1) * -1 / 2);
-				offsetY = ((Range - 1) * -1 / 2);
-			}
-			else if (angle == 90)
-			{
-				offsetX = 1;
-				offsetY = ((Range - 1) * -1 / 2);
-			}
-			else if (angle == 180)
-			{
-				offsetX = ((Range + 1) * 1 / 2);
-				offsetY = ((Range + 1) * 1 / 2);
-			}
-			else if (angle == 270)
-			{
-				offsetY = ((Range + 1) * 1 / 2);
-			}
-			else
-			{ return null; }
-			var top = pos.Row + offsetY;
-			var left = pos.Col + offsetX + 1;
+			// 棋盤 grid 的 col 座標從 -1（標籤列）開始，故像素 left 需 +1；
+			// row 座標從 0 開始，無需偏移。
+			var top = minRow * size;
+			var left = (minCol + 1) * size;
+			var width = (maxCol - minCol + 1) * size;
+			var height = (maxRow - minRow + 1) * size;
 			var style = "";
 			style += $"position: absolute;";
-			style += $"top: {top * size}px;";
-			style += $"left: {left * size}px;";
-			style += $"width: {Range * size}px;";
-			style += $"height: {Range * size}px;";
+			style += $"top: {top}px;";
+			style += $"left: {left}px;";
+			style += $"width: {width}px;";
+			style += $"height: {height}px;";
 			style += $"background-image: url('{Path}');";
 			style += "background-size: 100%;";
 			style += $"transform: rotate({angle}deg);";

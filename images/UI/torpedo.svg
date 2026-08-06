@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="16mm"
+   height="15.999993mm"
+   viewBox="0 0 16 15.999993"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   sodipodi:docname="船艦美術草稿.svg"
+   xml:space="preserve"
+   inkscape:export-filename="NavalChess\wwwroot\images\UI\arrow.svg"
+   inkscape:export-xdpi="100"
+   inkscape:export-ydpi="100"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+   id="namedview1"
+   pagecolor="#ffffff"
+   bordercolor="#000000"
+   borderopacity="0.25"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:document-units="mm"
+   inkscape:lockguides="false"
+   showgrid="true"
+   inkscape:zoom="1.4142136"
+   inkscape:cx="304.05591"
+   inkscape:cy="957.77611"
+   inkscape:window-width="1920"
+   inkscape:window-height="1009"
+   inkscape:window-x="-8"
+   inkscape:window-y="-8"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="svg1"
+   inkscape:export-bgcolor="#ffffff00"
+   showguides="true"><inkscape:grid
+     id="grid4"
+     units="mm"
+     originx="-96"
+     originy="-255.99995"
+     spacingx="2.0000001"
+     spacingy="1.9999996"
+     empcolor="#0099e5"
+     empopacity="0.30196078"
+     color="#0099e5"
+     opacity="0.14901961"
+     empspacing="8"
+     enabled="true"
+     visible="true"
+     snapvisiblegridlinesonly="true"
+     dotted="false" /><inkscape:page
+     x="0"
+     y="0"
+     width="16"
+     height="15.999993"
+     id="page2"
+     margin="0"
+     bleed="0" /></sodipodi:namedview><defs
+   id="defs1" />
+
+<rect
+   style="fill:#fffc00;fill-opacity:0.4;stroke:#f4e000;stroke-width:0.202081;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+   id="rect1-8-8"
+   width="15.797918"
+   height="15.797915"
+   x="0.10104104"
+   y="0.10102236"
+   inkscape:export-filename="NavalChess\wwwroot\images\UI\torpedo.svg"
+   inkscape:export-xdpi="100"
+   inkscape:export-ydpi="100" />
+  
+<path
+   id="path5745-6"
+   style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:#ccb500;fill-opacity:0.886275;fill-rule:nonzero;stroke:none;stroke-width:0.0158619;marker:none;enable-background:accumulate"
+   d="m 13.621828,7.1340497 -0.90087,-0.0301 c -0.30347,0.015 -0.61472,0.22367 -0.6899,0.31514 -0.27209,-0.0761 -3.1131507,-0.30452 -5.7174007,-0.35513 l -0.65518,-0.0117 -2.477405,-0.0314 c -0.255673,0.0165 -0.329897,0.0314 -0.617471,0.16333 -0.392679,0.25651 -0.574111,0.7369 -0.568009,0.86448 0.0071,0.14889 0.175317,0.69713 0.680348,0.87343 7e-6,0 0.0013,4.3e-4 0.0013,4.3e-4 0.293924,0.0608 0.559339,0.0574 0.625333,0.0543 l 0.108897,-8.7e-4 0.167842,-8.7e-4 c 0.117506,-10e-4 0.246904,-0.003 0.389759,-0.005 l 0.0092,0.003 0.0076,-6e-5 0.276866,-0.006 -0.008,-0.002 c 0.22754,-0.004 0.47525,-0.008 0.74183,-0.0133 l 0.75136,-0.0173 c 2.07834,-0.0501 4.5857007,-0.19445 5.7526707,-0.31258 0.2293,-0.0279 0.51526,-0.0627 0.51526,-0.0627 0.4186,0.30891 0.71571,0.28931 0.71571,0.28931 l 1.08067,0.0324 c 0,0 0.0277,-0.12219 -0.14544,-0.17603 -0.0968,-0.0301 -0.14575,-0.15994 -0.14398,-0.23769 0.004,-0.15549 0.0726,-0.30982 0.18127,-0.3015 0.16332,0.0125 0.0211,0.36434 0.0211,0.36434 0.0406,0.13926 0.1769,0.1968 0.26504,0.0956 0.0928,-0.10661 -0.13184,-0.28368 -0.028,-0.43198 0.0505,-0.0722 0.27338,-0.0921 0.25017,-0.23354 -0.0232,-0.14142 -0.23854,-0.15769 -0.23854,-0.15769 -0.0464,-0.10482 -0.1003,-0.20714 0.0131,-0.36479 -0.0555,-0.10437 -0.19103,-0.0471 -0.23663,0.019 0.0148,0.1055 0.0726,0.20395 0.006,0.32272 l -0.17558,-0.01 c -0.0564,-0.12023 -0.0927,-0.24205 -0.042,-0.37081 0.041,-0.11525 0.12726,-0.11485 0.21423,-0.11273 0.005,-0.11152 -0.0729,-0.12016 -0.13193,-0.15238 z m -7.8736907,1.80063 c 0.10339,0.0176 0.22632,0.0299 0.35947,0.0394 z"
+   sodipodi:nodetypes="cccccccssccccccccccccccccsscsssccccccccccc" />
+  </svg>

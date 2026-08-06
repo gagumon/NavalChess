@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="15.999992mm"
+   height="15.999993mm"
+   viewBox="0 0 15.999992 15.999993"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   sodipodi:docname="mine.svg"
+   xml:space="preserve"
+   inkscape:export-filename="NavalChess\wwwroot\images\UI\arrow.svg"
+   inkscape:export-xdpi="100"
+   inkscape:export-ydpi="100"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+   id="namedview1"
+   pagecolor="#ffffff"
+   bordercolor="#000000"
+   borderopacity="0.25"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:document-units="mm"
+   inkscape:lockguides="false"
+   showgrid="true"
+   inkscape:zoom="8.0000001"
+   inkscape:cx="4.375"
+   inkscape:cy="24.0625"
+   inkscape:window-width="1920"
+   inkscape:window-height="1009"
+   inkscape:window-x="-8"
+   inkscape:window-y="-8"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="g2"
+   inkscape:export-bgcolor="#ffffff00"
+   showguides="true"><inkscape:grid
+     id="grid4"
+     units="mm"
+     originx="-192"
+     originy="-111.99998"
+     spacingx="2.0000001"
+     spacingy="1.9999996"
+     empcolor="#0099e5"
+     empopacity="0.30196078"
+     color="#0099e5"
+     opacity="0.14901961"
+     empspacing="8"
+     enabled="true"
+     visible="true"
+     snapvisiblegridlinesonly="true"
+     dotted="false" /><inkscape:page
+     x="0"
+     y="0"
+     width="15.999992"
+     height="15.999993"
+     id="page2"
+     margin="0"
+     bleed="0" /></sodipodi:namedview><defs
+   id="defs1" /><g
+   id="g2"
+   inkscape:export-filename="mine.svg"
+   inkscape:export-xdpi="100"
+   inkscape:export-ydpi="100"
+   transform="translate(-192,-111.99998)"><path
+     style="fill:#a4abc2;fill-opacity:1;stroke:none;stroke-width:0.0223442;stroke-linecap:round;stroke-linejoin:round"
+     d="m 197.36095,120.42951 -1.78754,-0.41639 1.78754,-0.47738 z"
+     id="path11"
+     inkscape:export-filename="NavalChess\wwwroot\images\Unit\mine.svg"
+     inkscape:export-xdpi="100"
+     inkscape:export-ydpi="100" /><path
+     style="fill:#a4abc2;fill-opacity:1;stroke:none;stroke-width:0.0223442;stroke-linecap:round;stroke-linejoin:round"
+     d="m 202.71246,120.45895 1.78754,-0.41639 -1.78754,-0.47738 z"
+     id="path11-5" /><ellipse
+     style="fill:#c3d1f5;fill-opacity:1;stroke:none;stroke-width:0.0446883;stroke-linecap:round;stroke-linejoin:round"
+     id="path3-8"
+     cx="199.99297"
+     cy="119.99939"
+     rx="3.5750773"
+     ry="3.5750766" /><ellipse
+     style="fill:#71798f;fill-opacity:1;stroke:none;stroke-width:0.0438113;stroke-linecap:round;stroke-linejoin:round"
+     id="path3"
+     cx="199.99297"
+     cy="119.99939"
+     rx="3.5049191"
+     ry="3.5049183" /><ellipse
+     style="fill:#a4abc2;fill-opacity:1;stroke:none;stroke-width:0.0446883;stroke-linecap:round;stroke-linejoin:round"
+     id="path10"
+     cx="199.99297"
+     cy="119.99939"
+     rx="0.89376932"
+     ry="0.89376915" /><path
+     style="fill:#a4abc2;fill-opacity:1;stroke:none;stroke-width:0.029921;stroke-linecap:round;stroke-linejoin:round"
+     d="m 199.38862,117.44 0.55759,-2.39369 0.63925,2.39369 z"
+     id="path11-8" /><path
+     style="fill:#a4abc2;fill-opacity:1;stroke:none;stroke-width:0.0273346;stroke-linecap:round;stroke-linejoin:round"
+     d="m 197.77877,118.59336 -1.05192,-1.98367 1.87649,1.26563 z"
+     id="path11-8-1" /><path
+     style="fill:#a4abc2;fill-opacity:1;stroke:none;stroke-width:0.0273346;stroke-linecap:round;stroke-linejoin:round"
+     d="m 202.22111,118.59857 1.05192,-1.98367 -1.8765,1.26563 z"
+     id="path11-8-1-2" /><path
+     style="fill:#a4abc2;fill-opacity:1;stroke:none;stroke-width:0.0273346;stroke-linecap:round;stroke-linejoin:round"
+     d="m 197.78411,121.41267 -1.05192,1.98367 1.87649,-1.26563 z"
+     id="path11-8-1-3" /><path
+     style="fill:#a4abc2;fill-opacity:1;stroke:none;stroke-width:0.0273346;stroke-linecap:round;stroke-linejoin:round"
+     d="m 202.22645,121.40746 1.05191,1.98367 -1.87649,-1.26563 z"
+     id="path11-8-1-2-2" /><path
+     style="fill:#a4abc2;fill-opacity:1;stroke:none;stroke-width:0.029921;stroke-linecap:round;stroke-linejoin:round"
+     d="m 199.39396,122.56603 0.55759,2.3937 0.63925,-2.3937 z"
+     id="path11-8-2" /><path
+     style="fill:none;stroke:none;stroke-width:0.31725;stroke-linecap:round;stroke-linejoin:round"
+     d="m 194,113.99998 v 11.99999 h 12 v -11.99999 h -12"
+     id="path12" /><path
+     style="fill:none;stroke:none;stroke-width:0.423;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+     d="m 192,111.99998 v 15.99999 h 16 v -15.99999 h -16"
+     id="path12-8" /></g>
+
+
+  
+
+  
+
+  </svg>

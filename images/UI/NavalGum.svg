@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="32mm"
+   height="31.999987mm"
+   viewBox="0 0 32 31.999987"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   sodipodi:docname="船艦美術草稿.svg"
+   xml:space="preserve"
+   inkscape:export-filename="NavalChess\wwwroot\images\UI\arrow.svg"
+   inkscape:export-xdpi="100"
+   inkscape:export-ydpi="100"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+   id="namedview1"
+   pagecolor="#ffffff"
+   bordercolor="#000000"
+   borderopacity="0.25"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:document-units="mm"
+   inkscape:lockguides="false"
+   showgrid="true"
+   inkscape:zoom="1.4142136"
+   inkscape:cx="304.05591"
+   inkscape:cy="957.77611"
+   inkscape:window-width="1920"
+   inkscape:window-height="1009"
+   inkscape:window-x="-8"
+   inkscape:window-y="-8"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="svg1"
+   inkscape:export-bgcolor="#ffffff00"
+   showguides="true"><inkscape:grid
+     id="grid4"
+     units="mm"
+     originx="-95.906456"
+     originy="-207.78951"
+     spacingx="2.0000001"
+     spacingy="1.9999996"
+     empcolor="#0099e5"
+     empopacity="0.30196078"
+     color="#0099e5"
+     opacity="0.14901961"
+     empspacing="8"
+     enabled="true"
+     visible="true"
+     snapvisiblegridlinesonly="true"
+     dotted="false" /><inkscape:page
+     x="0"
+     y="0"
+     width="32"
+     height="31.999987"
+     id="page2"
+     margin="0"
+     bleed="0" /></sodipodi:namedview><defs
+   id="defs1" />
+
+<rect
+   style="fill:#fffc00;fill-opacity:0.4;stroke:#f4e000;stroke-width:0.404163;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+   id="rect1-8"
+   width="31.595833"
+   height="31.595825"
+   x="0.20208474"
+   y="0.20207371"
+   inkscape:export-filename="NavalChess\wwwroot\images\UI\NavalGum.svg"
+   inkscape:export-xdpi="100"
+   inkscape:export-ydpi="100" />
+  
+
+  <path
+   id="path63"
+   style="fill:#bfbf00;fill-rule:evenodd;stroke-width:1.06227"
+   d="m 18.723252,13.341047 -10e-4,0.0971 0.14791,7e-5 -0.001,0.14916 0.23339,0.006 0.002,-0.12119 0.22898,5.7e-4 -4.7e-4,0.0854 0.10395,1.3e-4 0.001,-0.0923 0.22899,0.002 -1.5e-4,0.13616 0.91364,0.02 -0.007,0.69178 0.52764,0.50741 -0.03,2.90118 -0.38284,0.35323 -0.003,0.003 -0.0832,0.0847 -5.6e-4,-0.008 -0.0685,0.0637 -0.007,0.6774 -0.914,0.0174 -0.003,0.1916 -0.22894,-0.002 10e-4,-0.12937 -0.10391,-0.001 -1.4e-4,0.13753 -0.22899,-0.002 0.002,-0.1827 -0.23346,0.004 -0.001,0.15121 -0.14795,-0.001 -1.6e-4,0.1348 -0.22898,-0.002 1.5e-4,-0.13547 -0.15678,-0.001 1.5e-4,-0.13479 -0.25242,0.006 -0.001,0.15872 -0.22895,-0.002 0.001,-0.12937 -0.10351,-0.001 -1.4e-4,0.13684 -0.22899,-0.002 10e-4,-0.15053 -4.03004,0.0772 -0.0761,-0.0143 7e-5,0.0159 -5.3786807,-1.01503 -1.4e-4,0.0164 -4.115233,-1.47891 -0.002,-0.0152 -0.78026,-0.28454 10e-4,-0.10325 0.88151,-0.3214 2e-4,0.0133 3.988093,-1.4328 0.014,-0.003 0.01,-0.0333 5.4355307,-0.90598 4e-4,-0.003 0.0269,-0.004 4.08247,0.0901 4e-4,-0.0889 0.229,0.002 -4.7e-4,0.0854 0.10348,1.4e-4 0.001,-0.093 0.22899,0.002 -10e-4,0.10324 0.25226,0.006 10e-4,-0.14302 0.1568,10e-4 0.001,-0.0958 z m -0.443,5.53677 -0.25241,0.007 -10e-6,6.9e-4 0.25239,-0.007 z"
+   sodipodi:nodetypes="ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" /><path
+   style="fill:none;fill-opacity:0.886275;stroke:#bfbf00;stroke-width:0.15;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+   d="m 22.110582,13.789347 8.23715,0.0476"
+   id="path65"
+   sodipodi:nodetypes="cc" /><path
+   style="fill:none;fill-opacity:0.886275;stroke:#bfbf00;stroke-width:0.15;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+   d="m 22.130672,16.251567 8.22251,0.007"
+   id="path65-2"
+   sodipodi:nodetypes="cc" /><path
+   style="fill:none;fill-opacity:0.886275;stroke:#bfbf00;stroke-width:0.15;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+   d="m 21.998172,18.754497 8.48137,-0.0134"
+   id="path65-23"
+   sodipodi:nodetypes="cc" /></svg>
